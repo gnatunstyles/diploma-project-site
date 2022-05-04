@@ -3,6 +3,7 @@ package handlers
 import (
 	database "diploma-project-site/db"
 	"diploma-project-site/internal/models"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -97,6 +98,9 @@ func SignUp(c *fiber.Ctx) error {
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost) // хэш
+	if err != nil {
+		return err
+	}
 
 	user := &models.User{Username: req.Username, Password: string(hash), Email: req.Email}
 	db.Create(&user)
@@ -105,8 +109,8 @@ func SignUp(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(fiber.Map{"token": token, "exp": exp, "user": user})
 
+	return c.JSON(fiber.Map{"token": token, "exp": exp, "user": user})
 }
 
 func generateJwt(user models.User) (string, int64, error) {
@@ -122,4 +126,11 @@ func generateJwt(user models.User) (string, int64, error) {
 	return t, exp, nil
 }
 
-//delete/patch/get
+func UploadFile(c *fiber.Ctx) error {
+	file, err := c.FormFile(".las")
+	if err != nil {
+		return c.JSON(fiber.Map{"status": 500, "message": "File not found", "data": nil})
+	}
+	return c.SaveFile(file, fmt.Sprintf("./projects/%s/%s", file.Filename, "user"))
+
+}

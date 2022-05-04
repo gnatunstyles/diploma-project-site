@@ -17,6 +17,7 @@ func initRoutes(app *fiber.App) {
 	public := app.Group("/public")
 	app.Get("/users", handlers.GetUsers)
 	app.Get("/users/:id", handlers.GetUserById)
+	app.Post("/users/:id/upload", handlers.UploadFile)
 	app.Post("/users", handlers.PostUser)
 	app.Delete("/users/:id", handlers.DeleteUser)
 	public.Post("/sign-up", handlers.SignUp)
@@ -42,7 +43,9 @@ func initDB() {
 }
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 4 * 1024 * 1024 * 1024 * 1024,
+	})
 	initDB()
 	initRoutes(app)
 	app.Listen(":3000")
