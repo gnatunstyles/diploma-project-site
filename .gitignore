@@ -1,0 +1,8 @@
+Makefile
+.env
+/projects
+/potree
+.vscode
+/PotreeConverter_backup
+/backups
+/LAStools

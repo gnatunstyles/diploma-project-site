@@ -12,6 +12,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//ADD TO THE ENVIROMENTAL VARIABLES
+const jwtSecretKey = "secret"
+
 func GetUsers(c *fiber.Ctx) error {
 	db := database.DBConn
 	users := new([]models.User)
@@ -68,15 +71,44 @@ func SignIn(c *fiber.Ctx) error {
 	if user.Email != "" {
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 		if err != nil {
-			return c.Status(403).SendString("Wrong password. Try again!")
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": "Wrong password. Try again!",
+			})
 		}
-		token, exp, err := generateJwt(*user)
+		// token, exp, err := generateJwt(*user)
+		// if err != nil {
+		// 	return err
+		// }
+
+		claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+			Id:        strconv.Itoa(int(user.ID)),
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), //1 day
+		})
+
+		token, err := claims.SignedString([]byte(jwtSecretKey))
+
 		if err != nil {
-			return err
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error. Could not login to the server.",
+			})
 		}
-		return c.Status(200).JSON(fiber.Map{"token": token, "exp": exp, "user": user})
+		cookie := fiber.Cookie{
+			Name:     "jwt",
+			Value:    token,
+			Expires:  time.Now().Add(time.Hour * 24),
+			HTTPOnly: true, //for storing into frontend and sending it
+		}
+
+		c.Cookie(&cookie)
+		return c.JSON(fiber.Map{
+			"message": "success",
+			"user":    user,
+			"cookie":  cookie,
+		})
 	}
-	return c.Status(403).SendString("Email not found. Try again!")
+	return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		"message": "Email not found. Try again!",
+	})
 }
 
 func SignUp(c *fiber.Ctx) error {
@@ -105,25 +137,45 @@ func SignUp(c *fiber.Ctx) error {
 	user := &models.User{Username: req.Username, Password: string(hash), Email: req.Email}
 	db.Create(&user)
 
-	token, exp, err := generateJwt(*user)
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(fiber.Map{"token": token, "exp": exp, "user": user})
+	return c.JSON(fiber.Map{"message": "registration success", "user": user})
 }
 
-func generateJwt(user models.User) (string, int64, error) {
-	exp := time.Now().Add(time.Minute * 30).Unix()
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["user_id"] = user.ID
-	claims["exp"] = exp
-	t, err := token.SignedString([]byte("secret"))
+func GetCurrentUser(c *fiber.Ctx) error {
+	db := database.DBConn
+
+	cookie := c.Cookies("jwt")
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(jwtSecretKey), nil
+		})
+
 	if err != nil {
-		return "", 0, err
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "unauthorized",
+		})
 	}
-	return t, exp, nil
+	claims := token.Claims.(*jwt.StandardClaims)
+
+	user := models.User{}
+
+	db.Where("id = ?", claims.Id).First(&user)
+
+	return c.JSON(fiber.Map{
+		"message":  "authorized",
+		"user":     user,
+		"username": user.Username,
+		"claims":   claims,
+	})
+}
+
+func UserSignout(c *fiber.Ctx) error {
+	c.Cookie(&fiber.Cookie{
+		Name:     "jwt",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Second),
+		HTTPOnly: true,
+	})
+	return c.JSON(fiber.Map{"message": "user logged out successful"})
 }
 
 func UploadFile(c *fiber.Ctx) error {
@@ -134,3 +186,33 @@ func UploadFile(c *fiber.Ctx) error {
 	return c.SaveFile(file, fmt.Sprintf("./projects/%s/%s", file.Filename, "user"))
 
 }
+
+func GetProjects(c *fiber.Ctx) error {
+	db := database.DBConn
+	user := new(models.User)
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return err
+	}
+	db.First(&user, id)
+
+	if user.ID == 0 {
+		return c.JSON(fiber.Map{"status": 404, "message": "user not found."})
+	}
+	return c.JSON(fiber.Map{"username": user.Username, "projects": user.Projects})
+}
+
+func addProject(c *fiber.Ctx) error { return nil }
+
+// func generateJwt(user models.User) (string, time.Time, error) {
+// 	exp := time.Now().Add(time.Hour * 24) //1 day
+// 	token := jwt.New(jwt.SigningMethodHS256)
+// 	claims := token.Claims.(jwt.MapClaims)
+// 	claims["user_id"] = user.ID
+// 	claims["exp"] = exp
+// 	t, err := token.SignedString([]byte(secretKey))
+// 	if err != nil {
+// 		return "", time.Time{}, err
+// 	}
+// 	return t, exp, nil
+// }

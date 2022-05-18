@@ -7,6 +7,7 @@ type User struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	Password string `json:"-"`
+	Projects string `json:"projects"`
 }
 
 type SignUpRequest struct {
@@ -18,4 +19,10 @@ type SignUpRequest struct {
 type SignInRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type Project struct {
+	Name string
+	Size string
+	Link string
 }
