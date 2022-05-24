@@ -36,14 +36,18 @@ const Nav = (props: {
             Регистрация
           </Link>
         </li>
-        <li className="nav-item">
-          <a className="nav-link disabled">Disabled</a>
-        </li>
       </ul>
     );
   } else {
     menu = (
       <ul className="navbar-nav me-auto mb-2 mb-md-0">
+        
+        <li className="nav-item">
+          <Link to={"/upload"} className="nav-link">
+            Загрузить
+          </Link>
+        </li>
+
         <li className="nav-item">
           <Link to={"/projects"} className="nav-link">
             Проекты

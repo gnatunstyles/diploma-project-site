@@ -2,10 +2,12 @@ package main
 
 import (
 	database "diploma-project-site/db"
+	"diploma-project-site/internal/config"
 	"diploma-project-site/internal/handlers"
 	"diploma-project-site/internal/models"
 	"fmt"
-	"os"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -14,8 +16,7 @@ import (
 )
 
 func initRoutes(app *fiber.App) {
-	// private := app.Group("/private")
-	// public := app.Group("/public")
+
 	app.Get("api/users", handlers.GetUsers)
 	app.Get("api/users/:id", handlers.GetUserById)
 	app.Post("api/users", handlers.PostUser)
@@ -25,20 +26,17 @@ func initRoutes(app *fiber.App) {
 	app.Post("api/sign-in", handlers.SignIn)
 	app.Get("api/user", handlers.GetCurrentUser)
 
-	app.Post("api/users/:id/upload", handlers.UploadFile)
+	app.Post("api/users/upload", handlers.UploadFile)
 
 	app.Post("api/user/logout", handlers.UserSignout)
 
 	// app.Post("/users/:id/:fileName/update", handlers.UpdateFile)
 	// app.Delete("/users/:id/delete", handlers.DeleteFile)
-
 	// private.Get("/")
 }
 
-func initDB() {
+func initDB(dsn string) {
 	var err error
-
-	dsn := os.Getenv("DB_CONFIG_STRING")
 
 	database.DBConn, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
@@ -47,19 +45,25 @@ func initDB() {
 	}
 
 	fmt.Println("database connected successfully")
-	database.DBConn.AutoMigrate(&models.User{})
+	database.DBConn.AutoMigrate(&models.User{}, &models.Project{})
 	fmt.Println("database migrated")
-
 }
 
 func main() {
-	initDB()
+	cfg, err := config.New()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error during the config reading")
+		return
+	}
+
+	initDB(cfg.DBConnString)
 	app := fiber.New(fiber.Config{
-		BodyLimit: -1,
+		BodyLimit: 4 * 1024 * 1024 * 1024,
 	})
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true, //with this frontend allow to take cookie and send it back
 	}))
+
 	initRoutes(app)
 	app.Listen(":8000")
 }

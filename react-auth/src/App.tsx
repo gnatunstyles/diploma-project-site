@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Projects from "./pages/Projects";
 import Register from "./pages/Register";
+import Upload from "./pages/Upload";
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
             <Route path="/login" element={<Login setName={setName}/>} />
             <Route path="/register" element={<Register />} />
             <Route path="/projects" element={<Projects/>}/>
+            <Route path="/upload" element={<Upload />}/>
           </Routes>
         </main>
       </BrowserRouter>
