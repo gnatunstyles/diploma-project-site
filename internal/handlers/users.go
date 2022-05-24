@@ -3,7 +3,6 @@ package handlers
 import (
 	database "diploma-project-site/db"
 	"diploma-project-site/internal/models"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -11,20 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetProjects(c *fiber.Ctx) error {
-	db := database.DBConn
-	user := new(models.User)
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return err
-	}
-	db.First(&user, id)
-	// db.Find()
-	if user.ID == 0 {
-		return c.JSON(fiber.Map{"status": 404, "message": "user not found."})
-	}
-	return c.JSON(fiber.Map{"username": user.Username, "project": user.Project})
-}
+const hostName string = "http://localhost:1234"
 
 func GetUsers(c *fiber.Ctx) error {
 	db := database.DBConn
@@ -97,36 +83,3 @@ func GetCurrentUser(c *fiber.Ctx) error {
 		"claims":   claims,
 	})
 }
-
-func UploadFile(c *fiber.Ctx) error {
-	// id := 1
-	file, err := c.FormFile(".laz")
-	if err != nil {
-		return c.JSON(fiber.Map{"status": 500, "message": "File not found", "data": nil})
-	}
-
-	err = c.SaveFile(file, fmt.Sprintf("./uploads/%s", file.Filename))
-	if err != nil {
-		return c.JSON(fiber.Map{"status": 500, "message": "File not saved", "data": nil})
-	}
-
-	fmt.Printf("Uploaded File: %+v\n", file.Filename)
-	fmt.Printf("File Size: %+v\n", file.Size)
-	fmt.Printf("MIME Header: %+v\n", file.Header)
-
-	newProject := models.Project{
-		UserId: 1,
-		Name:   file.Filename,
-		Size:   file.Size,
-		Link:   "http://localhost:1234/examples/lion.html",
-	}
-
-	database.DBConn.Create(&newProject)
-
-	return c.JSON(fiber.Map{"status": 500, "message": "File uploaded successfully."})
-
-}
-
-// func convert(file *multipart.FileHeader) error {
-// 	return nil
-// }

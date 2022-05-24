@@ -15,7 +15,7 @@ type User struct {
 type Project struct {
 	gorm.Model
 	UserId uint64 `json:"user_id"`
-	Name   string `json:"project"`
+	Name   string `json:"project_name"`
 	Size   int64  `json:"size"`
 	Link   string `json:"link"`
 }

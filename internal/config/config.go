@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/caarlos0/env"
-	"github.com/rs/zerolog/log"
 )
 
 type Config struct {
@@ -18,6 +17,6 @@ func New() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("config initialization error: %s", err)
 	}
-	log.Info().Msgf("config: %v", cfg)
+	// log.Info().Msgf("config: %v", cfg)
 	return cfg, nil
 }

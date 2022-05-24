@@ -25,14 +25,16 @@ func initRoutes(app *fiber.App) {
 	app.Post("api/sign-up", handlers.SignUp)
 	app.Post("api/sign-in", handlers.SignIn)
 	app.Get("api/user", handlers.GetCurrentUser)
-
-	app.Post("api/users/upload", handlers.UploadFile)
-
 	app.Post("api/user/logout", handlers.UserSignout)
 
-	// app.Post("/users/:id/:fileName/update", handlers.UpdateFile)
+	app.Get("api/projects", handlers.GetUsers)
+	app.Post("api/projects/upload/:id", handlers.UploadProject)
+	// app.Post("api/projects/update/:id", handlers.UpdateProject)
+	// app.Get("api/projects/share/:id", handlers.ShareProject)
+	app.Delete("api/projects/delete/:project_name", handlers.DeleteProject)
+
+	// app.Post("/users/:id/:fileName/update", handlers.Convert())
 	// app.Delete("/users/:id/delete", handlers.DeleteFile)
-	// private.Get("/")
 }
 
 func initDB(dsn string) {
