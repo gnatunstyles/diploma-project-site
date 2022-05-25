@@ -4,19 +4,20 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Email          string  `json:"email"`
-	Username       string  `json:"username"`
-	Password       string  `json:"-"`
-	Project        Project `json:"project"`
-	UsedSpace      uint64  `json:"used" gorm:"default:0"`
-	AvailableSpace uint64  `json:"available" gorm:"default:10737418240"`
+	Email          string `json:"email"`
+	Username       string `json:"username"`
+	Password       string `json:"-"`
+	ProjectId      uint64 `json:"project_id"`
+	UsedSpace      uint64 `json:"used_space" gorm:"default:0"`
+	AvailableSpace uint64 `json:"available" gorm:"default:10737418240"`
 }
 
 type Project struct {
 	gorm.Model
 	UserId uint64 `json:"user_id"`
 	Name   string `json:"project_name"`
-	Size   int64  `json:"size"`
+	Info   string `json:"info"`
+	Size   uint64 `json:"size"`
 	Link   string `json:"link"`
 }
 
@@ -29,4 +30,9 @@ type SignUpRequest struct {
 type SignInRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type ProjectUpdateRequest struct {
+	NewName string `json:"new_project_name"`
+	NewInfo string `json:"new_info"`
 }

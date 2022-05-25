@@ -73,7 +73,7 @@ func SignUp(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "Error. User with this email already exists.")
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost) // хэш
+	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}

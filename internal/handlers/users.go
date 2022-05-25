@@ -10,8 +10,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const hostName string = "http://localhost:1234"
-
 func GetUsers(c *fiber.Ctx) error {
 	db := database.DBConn
 	users := new([]models.User)
@@ -53,6 +51,7 @@ func DeleteUser(c *fiber.Ctx) error {
 		return c.Status(500).SendString("User not found.")
 	}
 	db.Delete(&user)
+
 	return c.JSON(&user)
 }
 
@@ -77,9 +76,12 @@ func GetCurrentUser(c *fiber.Ctx) error {
 	db.Where("id = ?", claims.Id).First(&user)
 
 	return c.JSON(fiber.Map{
-		"message":  "authorized",
-		"user":     user,
-		"username": user.Username,
-		"claims":   claims,
+		"message":    "authorized",
+		"user":       user,
+		"username":   user.Username,
+		"email":      user.Email,
+		"used_space": user.UsedSpace,
+		"avaliable":  user.AvailableSpace,
+		"claims":     claims,
 	})
 }
