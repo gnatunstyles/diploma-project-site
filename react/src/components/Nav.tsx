@@ -64,7 +64,7 @@ const Nav = (props: {
   }
 
   return (
-    <nav className="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <nav className="navbar navbar-expand-md navbar-dark bg-dark">
       <div className="container-fluid">
         <Link to={"/"} className="navbar-brand">
           Potree Visualizer

@@ -7,7 +7,7 @@ type User struct {
 	Email          string `json:"email"`
 	Username       string `json:"username"`
 	Password       string `json:"-"`
-	ProjectId      uint64 `json:"project_id"`
+	ProjectNumber  uint64 `json:"project_number"`
 	UsedSpace      uint64 `json:"used_space" gorm:"default:0"`
 	AvailableSpace uint64 `json:"available" gorm:"default:10737418240"`
 }

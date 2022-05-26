@@ -30,8 +30,8 @@ func initRoutes(app *fiber.App) {
 	app.Get("api/projects", handlers.GetProjects)
 	app.Get("api/projects/:id", handlers.GetAllProjectsByUserId)
 	app.Post("api/projects/upload/:id/:project_name", handlers.UploadProject)
-	app.Post("api/projects/update/:id", handlers.UpdateProject)
-	app.Get("api/projects/share/:id", handlers.ShareProjectLink)
+	app.Post("api/projects/update/:project_name", handlers.UpdateProject)
+	app.Get("api/projects/share/:project_name", handlers.ShareProjectLink)
 	app.Delete("api/projects/delete/:project_name", handlers.DeleteProject)
 
 }
