@@ -2,20 +2,26 @@ import React, { SyntheticEvent, useState } from "react";
 
 const Upload = () => {
   const [username, setName] = useState(""); //handle states [{variable}, {function, that changes variable}]
+  const [value, setValue] = useState({});
 
-  const upload = async () => {
-    const response = await fetch("http://localhost:8000/api/users/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ username }),
-    });
-    return response;
+  // const upload = async () => {
+  //   const response = await fetch("http://localhost:8000/api/users/upload", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     credentials: "include",
+  //     body: JSON.stringify({ username }),
+  //   });
+  //   return response;
+  // };
+
+  const upload = (e: any) => {
+    e.preventDefault()
+    console.log(e);
   };
 
   return (
     <form onSubmit={upload}>
-      <input type="file"/>
+      <input type="file" />
 
       <button
         type="submit"

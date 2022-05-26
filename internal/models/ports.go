@@ -1,3 +1,4 @@
 package models
 
-const PotreePort string = ":1234"
+const PotreePort = ":1234"
+const BackendPort = ":8000"

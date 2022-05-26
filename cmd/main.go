@@ -28,7 +28,8 @@ func initRoutes(app *fiber.App) {
 	app.Post("api/user/logout", handlers.UserSignout)
 
 	app.Get("api/projects", handlers.GetProjects)
-	app.Post("api/projects/upload/:id", handlers.UploadProject)
+	app.Get("api/projects/:id", handlers.GetAllProjectsByUserId)
+	app.Post("api/projects/upload/:id/:project_name", handlers.UploadProject)
 	app.Post("api/projects/update/:id", handlers.UpdateProject)
 	app.Get("api/projects/share/:id", handlers.ShareProjectLink)
 	app.Delete("api/projects/delete/:project_name", handlers.DeleteProject)
@@ -65,5 +66,5 @@ func main() {
 	}))
 
 	initRoutes(app)
-	app.Listen(":8000")
+	app.Listen(models.BackendPort)
 }

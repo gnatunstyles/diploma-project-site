@@ -85,3 +85,47 @@ func GetCurrentUser(c *fiber.Ctx) error {
 		"claims":     claims,
 	})
 }
+
+func EditCurrentUser(c *fiber.Ctx) error {
+	upd := &models.UserUpdateRequest{}
+
+	err := c.BodyParser(&upd)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  422,
+			"message": "error. wrong type of incoming data",
+		})
+	}
+	db := database.DBConn
+	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
+
+	cookie := c.Cookies("jwt")
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(jwtSecretKey), nil
+		})
+
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusUnauthorized,
+			"message": "unauthorized",
+		})
+	}
+	claims := token.Claims.(*jwt.StandardClaims)
+	user := models.User{}
+	db.Where("id = ?", claims.Id).First(&user)
+
+	if upd.NewEmail != "" {
+		user.Email = upd.NewEmail
+	}
+	if upd.NewUsername != "" {
+		user.Username = upd.NewUsername
+	}
+
+	db.Save(&user)
+
+	return c.JSON(fiber.Map{
+		"status":  200,
+		"message": "Project info updated successfully."})
+
+}

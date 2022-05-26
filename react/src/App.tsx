@@ -9,9 +9,8 @@ import Register from "./pages/Register";
 import Upload from "./pages/Upload";
 
 function App() {
-
   const [username, setName] = useState(""); //handle states [{variable}, {function, that changes variable}]
-
+  const [user, setUser] = useState({});
   useEffect(() => {
     (async () => {
       const response = await fetch("http://localhost:8000/api/user", {
@@ -20,23 +19,21 @@ function App() {
       });
       const content = await response.json();
       setName(content.username);
+      setUser(content);
     })();
-  });
-
-
-
+  },[]);
 
   return (
     <div className="App">
       <BrowserRouter>
-        <Nav username={username} setName={setName}/>
-        <main className="form-signin">
+        <Nav username={username} setName={setName} />
+        <main>
           <Routes>
-            <Route path="/" element={<Home username={username} />} />
-            <Route path="/login" element={<Login setName={setName}/>} />
+            <Route path="/" element={<Home userData={user} />} />
+            <Route path="/login" element={<Login setName={setName} />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/projects" element={<Projects/>}/>
-            <Route path="/upload" element={<Upload />}/>
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/upload" element={<Upload />} />
           </Routes>
         </main>
       </BrowserRouter>

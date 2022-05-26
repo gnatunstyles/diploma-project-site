@@ -20,19 +20,3 @@ type Project struct {
 	Size   uint64 `json:"size"`
 	Link   string `json:"link"`
 }
-
-type SignUpRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type SignInRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type ProjectUpdateRequest struct {
-	NewName string `json:"new_project_name"`
-	NewInfo string `json:"new_info"`
-}
