@@ -67,7 +67,7 @@ const Nav = (props: {
     <nav className="navbar navbar-expand-md navbar-dark bg-dark">
       <div className="container-fluid">
         <Link to={"/"} className="navbar-brand">
-          Potree Visualizer
+          CloudyClouds
         </Link>
         <div>{menu}</div>
       </div>

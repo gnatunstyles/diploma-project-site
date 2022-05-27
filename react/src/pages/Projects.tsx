@@ -15,7 +15,7 @@ const Projects = () => {
           <h5 className="modal-title">Project</h5>
         </div>
 
-        <div className="modal-footer flex-column border-top-0">
+        {/* <div className="modal-footer flex-column border-top-0">
           <a
             type="submit"
             href="http://localhost:1234/examples/lion.html"
@@ -44,7 +44,7 @@ const Projects = () => {
           >
             Delete
           </button>
-        </div>
+        </div> */}
       </div>
     </form>
   );
