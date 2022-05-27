@@ -16,7 +16,7 @@ type Project struct {
 	gorm.Model
 	UserId uint64 `json:"user_id"`
 	Name   string `json:"project_name"`
-	Info   string `json:"info"`
+	Info   string `json:"info" gorm:"default:Simple point cloud with unknown user data."`
 	Size   uint64 `json:"size"`
 	Link   string `json:"link"`
 }

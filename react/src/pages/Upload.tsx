@@ -18,7 +18,7 @@ const Upload = () => {
       <input type="file"/>
 
       <button
-        type="submit"
+        type="submit" name="cloud"
         className="btn btn-lg btn-info w-100 mx-0 mt-4 mb-2"
       >
         Send

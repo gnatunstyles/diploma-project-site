@@ -27,21 +27,21 @@ export default function MenuCard(props:{user: any, mode: any}){
                             Профиль
                         </b>
                     </div>
-                    <div className='userInfo'>Логин: alexx9911</div>
+                    <div className='userInfo'>Логин: {props.user.username}</div>
                     <div className='moreInfoButton' onClick={onClickItem}>{buttonText}</div>
                     {show &&
                     <div className='moreInfoBlock'>
                         <div className='itemRow'>
-                            <div className='textRow'>E-mail: alexx@alexx.ru</div>
+                            <div className='textRow'>E-mail: {props.user.email}</div>
                         </div>
                         <div className='itemRow'>
-                            <div className='textRow'>Телефон: 8800-555-35-35</div>
+                            <div className='textRow'>Проекты: {props.user.project_number}</div>
                         </div>
                         <div className='itemRow'>
-                            <div className='textRow'>Еще инфа: текст</div>
+                            <div className='textRow'>Места использовано: {(props.user.used_space/1073741824).toFixed(4)} GB</div>
                         </div>
                         <div className='itemRow'>
-                            <div className='textRow'>E-mail: alexx@alexx.ru</div>
+                            <div className='textRow'>Места доступно: {(props.user.available/1073741824).toFixed(4)} GB</div>
                         </div>
                         <div className='itemsButtonsGroup'>
                             <button className='buttonSettings'/>

@@ -24,6 +24,7 @@ function App() {
       const content = await response.json();
       setName(content.username);
       setId(content.user.ID)
+      setUser(content.user)
     })();
   });
 
@@ -36,7 +37,7 @@ function App() {
         <Nav username={username} setName={setName}/>
         <main className="form-signin">
           <Routes>
-            <Route path="/" element={<Home username={username} />} />
+            <Route path="/" element={<Home username={username} user={user} />} />
             <Route path="/login" element={<Login setName={setName}/>} />
             <Route path="/register" element={<Register />} />
             <Route path="/projects" element={<ProjectsLayout user={user} id={id}/>}/>
