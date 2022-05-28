@@ -179,7 +179,7 @@ func UploadProject(c *fiber.Ctx) error {
 	project.Name = projectName
 	project.Size = uint64(file.Size)
 
-	project.Link, err = convert(c, uint(project.UserId), project.Name, file)
+	project.Link, err = ConvertPotree(c, uint(project.UserId), project.Name, file)
 
 	if err != nil {
 		return c.JSON(fiber.Map{
@@ -267,7 +267,7 @@ func GetAllProjectsByUserId(c *fiber.Ctx) error {
 
 }
 
-func convert(c *fiber.Ctx, id uint, projectName string, f *multipart.FileHeader) (string, error) {
+func ConvertPotree(c *fiber.Ctx, id uint, projectName string, f *multipart.FileHeader) (string, error) {
 	inputRoot := fmt.Sprintf("%s/%d/%s/%s", models.ProjectSavePath, id, projectName, f.Filename)
 	fmt.Println(inputRoot)
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, projectName)
