@@ -38,6 +38,8 @@ export default function ProjectsLayout(props: { user: any, id: number }) {
     return arr;
   };
 
+
+
   return (
     <div className='layout'>
       <div

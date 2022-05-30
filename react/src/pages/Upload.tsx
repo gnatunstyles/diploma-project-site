@@ -16,10 +16,10 @@ const Upload = () => {
   return (
     <form onSubmit={upload}>
       <input type="file"/>
-
       <button
         type="submit" name="cloud"
         className="btn btn-lg btn-info w-100 mx-0 mt-4 mb-2"
+        onClick={upload}
       >
         Send
       </button>
