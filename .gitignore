@@ -1,5 +1,4 @@
 Makefile
-.env
 /projects
 /potree
 .vscode
@@ -9,3 +8,4 @@ Makefile
 /tools
 /convert_test
 *.las
+/secret

@@ -51,7 +51,21 @@ export default function ProjectCard(props: {proj: any}){
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
           >
-            Processing
+            Processing (Random Sampling)
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline-dark w-100 mx-0"
+            data-bs-dismiss="modal"
+          >
+            Processing (Grid barycenter)
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline-dark w-100 mx-0"
+            data-bs-dismiss="modal"
+          >
+            Processing (Grid candidate)
           </button>
           <button
             type="button"

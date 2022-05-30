@@ -14,18 +14,19 @@ point_cloud = lp.read(
 
 
 print(sys.argv[1])
+
 print(point_cloud.point_format)
 
-points = np.vstack((point_cloud.x, point_cloud.y,
-                    point_cloud.z)).transpose()
+transponded_pts = np.vstack((point_cloud.x, point_cloud.y,
+                             point_cloud.z)).transpose()
 
-colors = np.vstack((point_cloud.red, point_cloud.green,
-                   point_cloud.blue)).transpose()
+transponded_colors = np.vstack((point_cloud.red, point_cloud.green,
+                                point_cloud.blue)).transpose()
 
-factor = int(args[4])
+screening_size = int(args[4])
 
-decimated_points = points[::factor]
-decimated_colors = colors[::factor]
+decimated_points = transponded_pts[::screening_size]
+decimated_colors = transponded_colors[::screening_size]
 
 ax = plt.axes(projection='3d')
 
@@ -45,11 +46,11 @@ new_las_file = lp.create(
     file_version=header.version)
 
 
-new_las_file.xyz = decimated_points
+new_las_file.xyz = transponded_pts[::screening_size]
 
-new_las_file.red = point_cloud.red[::factor]
-new_las_file.green = point_cloud.green[::factor]
-new_las_file.blue = point_cloud.blue[::factor]
+new_las_file.red = point_cloud.red[::screening_size]
+new_las_file.green = point_cloud.green[::screening_size]
+new_las_file.blue = point_cloud.blue[::screening_size]
 
 
 print(new_las_file.points)
@@ -58,6 +59,3 @@ print(new_las_file.points)
 file_save_string = args[2] + args[3]
 
 new_las_file.write(file_save_string+'.las')
-
-
-# %%

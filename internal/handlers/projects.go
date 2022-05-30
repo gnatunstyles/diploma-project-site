@@ -142,13 +142,15 @@ func UploadProject(c *fiber.Ctx) error {
 			"data":    nil})
 	}
 
-	err = c.SaveFile(file, fmt.Sprintf("%s/%s/%s/%s", models.ProjectSavePath, id, projectName, file.Filename))
+	filePath := fmt.Sprintf("%s/%s/%s/%s", models.ProjectSavePath, id, projectName, file.Filename)
+	err = c.SaveFile(file, filePath)
 	if err != nil {
 		cmd := exec.Command("ls")
 		stdout, _ := cmd.Output()
 
 		fmt.Println(string(stdout))
 		err = os.Mkdir(fmt.Sprintf("%s/%s/%s/", models.ProjectSavePath, id, projectName), os.ModePerm)
+
 		if err != nil {
 			err = os.Mkdir(fmt.Sprintf("%s/%s/", models.ProjectSavePath, id), os.ModePerm)
 			if err != nil {
@@ -160,7 +162,8 @@ func UploadProject(c *fiber.Ctx) error {
 			}
 			_ = os.Mkdir(fmt.Sprintf("%s/%s/%s/", models.ProjectSavePath, id, projectName), os.ModePerm)
 		}
-		err = c.SaveFile(file, fmt.Sprintf("%s/%s/%s/%s", models.ProjectSavePath, id, projectName, file.Filename))
+
+		err = c.SaveFile(file, filePath)
 		if err != nil {
 			return c.JSON(fiber.Map{
 				"status":  500,
@@ -179,7 +182,8 @@ func UploadProject(c *fiber.Ctx) error {
 	project.Name = projectName
 	project.Size = uint64(file.Size)
 
-	project.Link, err = ConvertPotree(c, uint(project.UserId), project.Name, file)
+	project.Link, err = convertPotreeUploaded(c, uint(project.UserId), project.Name, file)
+	project.FilePath = filePath
 
 	if err != nil {
 		return c.JSON(fiber.Map{
@@ -267,7 +271,54 @@ func GetAllProjectsByUserId(c *fiber.Ctx) error {
 
 }
 
-func ConvertPotree(c *fiber.Ctx, id uint, projectName string, f *multipart.FileHeader) (string, error) {
+func GetProjectByName(c *fiber.Ctx) error {
+	db := database.DBConn
+	id := c.Params("id")
+	name := c.Params("project_name")
+	number, err := strconv.ParseUint(string(id), 10, 64)
+	project := &models.Project{}
+
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  500,
+			"message": "Error during parsing ID.",
+			"data":    nil})
+	}
+
+	user := &models.User{}
+	projectsList := &[]models.Project{}
+
+	db.First(&user, number)
+	if user.ID == 0 {
+		return c.JSON(fiber.Map{
+			"status":  400,
+			"message": "Error. User with this ID not found.",
+			"data":    nil})
+	}
+
+	db.Where("user_id = ?", user.ID).Find(&projectsList)
+	if len(*projectsList) == 0 {
+		return c.JSON(fiber.Map{
+			"message":  "this user has no active projects",
+			"projects": projectsList,
+		})
+	}
+	for _, val := range *projectsList {
+		if val.Name == name {
+			project = &val
+			return c.JSON(fiber.Map{
+				"status":  200,
+				"message": "Project info has been found successfully.",
+				"data":    &project})
+		}
+	}
+	return c.JSON(fiber.Map{
+		"status":  404,
+		"message": "Project not found.",
+		"data":    ""})
+}
+
+func convertPotreeUploaded(c *fiber.Ctx, id uint, projectName string, f *multipart.FileHeader) (string, error) {
 	inputRoot := fmt.Sprintf("%s/%d/%s/%s", models.ProjectSavePath, id, projectName, f.Filename)
 	fmt.Println(inputRoot)
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, projectName)
