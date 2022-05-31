@@ -39,8 +39,8 @@ func SignIn(c *fiber.Ctx) error {
 		cookie := fiber.Cookie{
 			Name:     "jwt",
 			Value:    token,
-			Expires:  time.Now().Add(time.Hour * 24),
-			HTTPOnly: true, //for storing into frontend and sending it
+			Expires:  time.Now().Add(time.Hour * 6),
+			HTTPOnly: true,
 		}
 
 		c.Cookie(&cookie)
@@ -98,7 +98,7 @@ func generateJwt(c *fiber.Ctx, user models.User) (string, error) {
 	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		Id:        strconv.Itoa(int(user.ID)),
-		ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+		ExpiresAt: time.Now().Add(time.Hour * 6).Unix(),
 	})
 
 	token, err := claims.SignedString([]byte(jwtSecretKey))

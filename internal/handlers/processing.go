@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"diploma-project-site/internal/converters"
 	"diploma-project-site/internal/models"
-	"diploma-project-site/internal/processing"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,7 +17,7 @@ func RandomProcessingHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	ans, err := processing.ConvertProcRand(req.ProjectName, req.FilePath, uint(req.UserId), int(req.Factor))
+	ans, err := converters.ConvertProcRand(req.ProjectName, req.FilePath, uint(req.UserId), int(req.Factor))
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -42,7 +42,7 @@ func GridCandidateProcessingHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	ans, err := processing.ConvertProcCandidate(req.ProjectName, req.FilePath, uint(req.UserId), int(req.Voxel))
+	ans, err := converters.ConvertProcCandidate(req.ProjectName, req.FilePath, uint(req.UserId), int(req.Voxel))
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -68,7 +68,7 @@ func GridBarycenterProcessingHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	ans, err := processing.ConvertProcBarycenter(req.ProjectName, req.FilePath, uint(req.UserId), int(req.Voxel))
+	ans, err := converters.ConvertProcBarycenter(req.ProjectName, req.FilePath, uint(req.UserId), int(req.Voxel))
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,

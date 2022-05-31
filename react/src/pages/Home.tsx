@@ -14,9 +14,16 @@ function Home(props: { username: string; user: any }) {
     }
   };
 
+  useEffect(() => {
+    if(props.username === null || props.username === undefined || props.username.length === 0){
+      document.location.href = '/login'
+    }
+  }, [props.username])
+
   const onCLickMenu = () => {
     setHidePannel((prev) => !prev);
   };
+  
   return (
     <div>
       <div className="layout">

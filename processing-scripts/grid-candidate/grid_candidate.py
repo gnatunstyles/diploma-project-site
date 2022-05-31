@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 args = sys.argv
 print(args)
 
-point_cloud = lp.read(sys.argv[1])
+point_cloud = lp.read(args[1])
 
-voxel_size = int(sys.argv[4])
+voxel_size = int(args[4])
 
 
 transponded_pts = np.vstack((point_cloud.x, point_cloud.y,
@@ -21,7 +21,8 @@ nb_vox = np.ceil((np.max(transponded_pts, axis=0) -
                  np.min(transponded_pts, axis=0))/voxel_size)
 
 non_empty_voxel_keys, inverse, points_per_voxel = np.unique(
-    ((transponded_pts - np.min(transponded_pts, axis=0)) // voxel_size).astype(int), axis=0, return_inverse=True, return_counts=True)
+    ((transponded_pts - np.min(transponded_pts, axis=0)) // voxel_size).astype(int),
+    axis=0, return_inverse=True, return_counts=True)
 
 idx_pts_vox_sorted = np.argsort(inverse)
 

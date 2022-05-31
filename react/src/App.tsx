@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Projects from "./pages/Projects";
 import Register from "./pages/Register";
 import Upload from "./pages/Upload";
+import UploadLayout from "./components/UploadLayout";
 
 function App() {
 
@@ -26,10 +27,7 @@ function App() {
       setId(content.user.ID)
       setUser(content.user)
     })();
-  });
-
-
-
+  }, []);
 
   return (
     <div className="App">
@@ -41,7 +39,7 @@ function App() {
             <Route path="/login" element={<Login setName={setName}/>} />
             <Route path="/register" element={<Register />} />
             <Route path="/projects" element={<ProjectsLayout user={user} id={id}/>}/>
-            <Route path="/upload" element={<Upload />}/>
+            <Route path="/upload" element={<UploadLayout user={user} id={id}/>}/>
           </Routes>
         </main>
       </BrowserRouter>

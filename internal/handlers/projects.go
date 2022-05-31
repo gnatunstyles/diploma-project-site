@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -131,7 +132,7 @@ func UploadProject(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  500,
-			"message": "File not found",
+			"message": "File not found.",
 			"data":    nil})
 	}
 
@@ -274,7 +275,6 @@ func GetAllProjectsByUserId(c *fiber.Ctx) error {
 func GetProjectByName(c *fiber.Ctx) error {
 	db := database.DBConn
 	id := c.Params("id")
-	name := c.Params("project_name")
 	number, err := strconv.ParseUint(string(id), 10, 64)
 	project := &models.Project{}
 
@@ -303,19 +303,30 @@ func GetProjectByName(c *fiber.Ctx) error {
 			"projects": projectsList,
 		})
 	}
+
+	name := c.Params("project_name")
+
+	if name == "" {
+		return c.JSON(fiber.Map{
+			"status":   200,
+			"message":  "string is empty",
+			"projects": projectsList,
+		})
+	}
+
+	res := []models.Project{*project}
 	for _, val := range *projectsList {
-		if val.Name == name {
-			project = &val
-			return c.JSON(fiber.Map{
-				"status":  200,
-				"message": "Project info has been found successfully.",
-				"data":    &project})
+		if strings.Contains(val.Name, name) {
+			res = append(res, val)
+
 		}
 	}
+
 	return c.JSON(fiber.Map{
-		"status":  404,
-		"message": "Project not found.",
-		"data":    ""})
+		"status":   200,
+		"message":  "Projects has been found successfully.",
+		"projects": res,
+	})
 }
 
 func convertPotreeUploaded(c *fiber.Ctx, id uint, projectName string, f *multipart.FileHeader) (string, error) {

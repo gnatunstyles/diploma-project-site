@@ -9,20 +9,24 @@ import matplotlib.pyplot as plt
 args = sys.argv
 print(args)
 
-point_cloud = lp.read(sys.argv[1])
+point_cloud = lp.read(args[1])
 
-voxel_size = int(sys.argv[4])
+voxel_size = int(args[4])
 
 
-points = np.vstack((point_cloud.x, point_cloud.y,
-                    point_cloud.z)).transpose()
+transponded_pts = np.vstack((point_cloud.x, point_cloud.y,
+                             point_cloud.z)).transpose()
 
-nb_vox = np.ceil((np.max(points, axis=0) - np.min(points, axis=0))/voxel_size)
+voxels = np.ceil(
+    (np.max(transponded_pts, axis=0) - np.min(transponded_pts, axis=0))/voxel_size)
 
-non_empty_voxel_keys, inverse, nb_pts_per_voxel = np.unique(
-    ((points - np.min(points, axis=0)) // voxel_size).astype(int), axis=0, return_inverse=True, return_counts=True)
+print(voxels)
 
-idx_pts_vox_sorted = np.argsort(inverse)
+non_empty_voxel_keys, inverse, points_num_per_voxel = np.unique(
+    ((transponded_pts - np.min(transponded_pts, axis=0)) // voxel_size).astype(int),
+    axis=0, return_inverse=True, return_counts=True)
+
+indexes_points_vox_sorted = np.argsort(inverse)
 
 voxel_grid = {}
 grid_barycenter = []
@@ -30,10 +34,12 @@ last_seen = 0
 
 for index, voxel in enumerate(non_empty_voxel_keys):
     voxel_grid[tuple(
-        voxel)] = points[idx_pts_vox_sorted[last_seen:last_seen+nb_pts_per_voxel[index]]]
+        voxel)] = transponded_pts[
+            indexes_points_vox_sorted[last_seen:last_seen+points_num_per_voxel[index]]]
+
     grid_barycenter.append(np.mean(voxel_grid[tuple(voxel)], axis=0))
 
-    last_seen += nb_pts_per_voxel[index]
+    last_seen += points_num_per_voxel[index]
 
 sampled = grid_barycenter
 

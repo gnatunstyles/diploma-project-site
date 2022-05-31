@@ -1,4 +1,4 @@
-package processing
+package converters
 
 import (
 	database "diploma-project-site/db"
@@ -21,7 +21,7 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 	os.Mkdir(outputDir, os.ModePerm)
 	fmt.Println("check")
 
-	cmd := exec.Command("python3", models.ProcessingRandomPath, fileToConvRoot, outputDir, fileName, strconv.Itoa(factor))
+	cmd := exec.Command(models.PythonVersion, models.ProcessingRandomPath, fileToConvRoot, outputDir, fileName, strconv.Itoa(factor))
 	out, err := cmd.Output()
 
 	if err != nil {
@@ -54,7 +54,7 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 
 	os.Mkdir(outputDir, os.ModePerm)
 	fmt.Println("check")
-	cmd := exec.Command("python3", models.ProcessingGridCandidatePath, fileToConvRoot, outputDir, fileName, strconv.Itoa(voxelSize))
+	cmd := exec.Command(models.PythonVersion, models.ProcessingGridCandidatePath, fileToConvRoot, outputDir, fileName, strconv.Itoa(voxelSize))
 	out, err := cmd.Output()
 
 	if err != nil {
@@ -74,7 +74,7 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 		return "", err
 	}
 
-	return "Grid barycanter-candidate algorithm sampling was done successfully.", nil
+	return "Grid barycanter candidate algorithm sampling was done successfully.", nil
 
 }
 
@@ -88,7 +88,7 @@ func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize 
 	os.Mkdir(outputDir, os.ModePerm)
 	fmt.Println("check")
 
-	cmd := exec.Command("python3", models.ProcessingGridBarycenterPath, fileToConvRoot, outputDir, fileName, strconv.Itoa(voxelSize))
+	cmd := exec.Command(models.PythonVersion, models.ProcessingGridBarycenterPath, fileToConvRoot, outputDir, fileName, strconv.Itoa(voxelSize))
 	out, err := cmd.Output()
 
 	if err != nil {
@@ -119,6 +119,7 @@ func ConvertNewProcPotree(id int, newFilePath, fileName, outputDir string) (stri
 	if err != nil {
 		println(err.Error())
 	}
+
 	fmt.Println(string(out))
 	link := fmt.Sprintf("%s%s/projects/%d/%s/%s.html", models.Host, models.PotreePort, id, fileName, fileName)
 	return link, nil

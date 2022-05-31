@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 
 const Nav = (props: {
   username: string,
   setName: (username: string) => void
 }) => {
+
+    const [buttonDisabled, setButtonDisabled] = useState(false)
 
   const logout = async () => {
     await fetch("http://localhost:8000/api/user/logout", {
@@ -15,6 +17,14 @@ const Nav = (props: {
 
     props.setName("");
   };
+
+    useEffect(() => {
+        if(props.username === null || props.username === undefined || props.username.length === 0){
+            setButtonDisabled(true)
+        } else {
+            setButtonDisabled(false)
+        }
+    }, [props.username])
 
   let menu;
 
@@ -43,12 +53,12 @@ const Nav = (props: {
       <ul className="navbar-nav me-auto mb-2 mb-md-0">
         
         <li className="nav-item">
-          <Link to={"/upload"} className="nav-link">
+          <Link to={"/upload"} className="nav-link" style={{pointerEvents: buttonDisabled ? 'none' : 'auto'}}>
             Загрузить
           </Link>
         </li>
 
-        <li className="nav-item">
+        <li className="nav-item" style={{pointerEvents: buttonDisabled ? 'none' : 'auto'}}>
           <Link to={"/projects"} className="nav-link">
             Проекты
           </Link>

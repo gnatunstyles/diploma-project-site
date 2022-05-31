@@ -26,7 +26,7 @@ const Login = (props: { setName: (username: string) => void }) => {
   }
 
   return (
-    <form  className={styles.wrapper}onSubmit={submit}>
+    <form  className={styles.wrapper} onSubmit={submit}>
       <h1 className="h3 mb-3 fw-normal" >Please sign in</h1>
 
       <div className="form-floating">

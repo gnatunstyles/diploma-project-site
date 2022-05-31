@@ -1,8 +1,16 @@
-import { SyntheticEvent, useEffect, useState } from "react";
+import {Dispatch, SyntheticEvent, useEffect, useState} from "react";
 import styles from "../styles/projectCard.module.sass";
+import {IProj} from "./ProjectsLayout";
 
-export default function ProjectCard(props: { proj: any }) {
-  const [projects, setProjects] = useState<Array<object>>([]);
+const MILLIARD = 1000000000;
+
+export default function ProjectCard(props: {
+    proj: IProj,
+    setMode: Dispatch<string>,
+    openModal: Dispatch<boolean> ,
+    setSelectedProj: Dispatch<IProj>
+    onClickDelete: (itemId: any, proj_name: string) => void
+}) {
 
   //     ID: 10,
   //     CreatedAt: "2022-05-26T21:34:18.144414+03:00",
@@ -14,77 +22,12 @@ export default function ProjectCard(props: { proj: any }) {
   //     size: 185075623,
   //     link: "http://localhost:1234/projects/1/kekich.html"
 
-  const random = async (e: SyntheticEvent) => {
-    const response = await fetch(
-      `http://localhost:8000/api/processing/random`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", //cookie getter
-        body: JSON.stringify({
-          project_name: props.proj.project_name,
-          user_id: props.proj.user_id,
-          file_path: props.proj.file_path,
-          factor: 10,
-        }),
-      }
-    );
-    const content = await response.json();
-    setProjects(content.projects);
-  };
-
-  const barycenter = async (e: SyntheticEvent) => {
-    const response = await fetch(
-      `http://localhost:8000/api/processing/barycenter`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", //cookie getter
-        body: JSON.stringify({
-          project_name: props.proj.project_name,
-          user_id: props.proj.user_id,
-          file_path: props.proj.file_path,
-          voxel_size: 3,
-        }),
-      }
-    );
-    const content = await response.json();
-    setProjects(content.projects);
-  };
-
-  const candidate = async (e: SyntheticEvent) => {
-    const response = await fetch(
-      `http://localhost:8000/api/processing/candidate`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", //cookie getter
-        body: JSON.stringify({
-          project_name: props.proj.project_name,
-          user_id: props.proj.user_id,
-          file_path: props.proj.file_path,
-          voxel_size: 3,
-        }),
-      }
-    );
-    const content = await response.json();
-    setProjects(content.projects);
-  };
-
-  const deleteProj = async (e: SyntheticEvent) => {
-    const response = await fetch(
-      `http://localhost:8000/api/projects/delete/${props.proj.project_name}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", //cookie getter
-      }
-    );
-    const content = await response.json();
-    setProjects(content.projects);
-  };
-
-
+  const onClickButtonsProcessing = (e : any) => {
+      console.log(e.target.value);
+      props.setMode(e.target.value);
+      props.setSelectedProj(props.proj)
+      props.openModal(true)
+  }
 
   let link = props.proj.link;
   return (
@@ -98,7 +41,7 @@ export default function ProjectCard(props: { proj: any }) {
             Описание: {props.proj.info}
           </div>
           <div className={styles.itemBodyListParamsListItem}>
-            Размер: {(props.proj.size / 1000000000).toFixed(3)} GB
+            Размер: {(props.proj.size / MILLIARD).toFixed(3)} GB
           </div>
         </div>
         <div className="modal-footer flex-column border-top-0">
@@ -124,7 +67,8 @@ export default function ProjectCard(props: { proj: any }) {
             type="button"
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
-            onClick={random}
+            onClick={(event) => onClickButtonsProcessing(event)}
+            value={'random'}
 
           >
             Processing (Random Sampling)
@@ -133,7 +77,8 @@ export default function ProjectCard(props: { proj: any }) {
             type="button"
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
-            onClick={barycenter}
+            onClick={(event) => onClickButtonsProcessing(event)}
+            value={'barycenter'}
 
           >
             Processing (Grid Barycenter)
@@ -142,7 +87,8 @@ export default function ProjectCard(props: { proj: any }) {
             type="button"
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
-            onClick={candidate}
+            onClick={(event) => onClickButtonsProcessing(event)}
+            value={'candidate'}
 
           >
             Processing (Grid Candidate)
@@ -151,7 +97,7 @@ export default function ProjectCard(props: { proj: any }) {
             type="button"
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
-            onClick={deleteProj}
+            onClick={() => props.onClickDelete(props.proj.ID, props.proj.project_name)}
           >
             Delete
           </button>
