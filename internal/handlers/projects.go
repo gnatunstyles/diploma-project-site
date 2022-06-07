@@ -3,6 +3,7 @@ package handlers
 import (
 	database "diploma-project-site/db"
 	"diploma-project-site/internal/models"
+	"diploma-project-site/internal/service"
 	"fmt"
 	"mime/multipart"
 	"os"
@@ -108,6 +109,8 @@ func UploadProject(c *fiber.Ctx) error {
 	db := database.DBConn
 	id := c.Params("id")
 	projectName := c.Params("project_name")
+	idDirPath := fmt.Sprintf("%s/%s/", models.ProjectSavePath, id)
+	projDirPath := fmt.Sprintf("%s/%s/%s/", models.ProjectSavePath, id, projectName)
 
 	number, err := strconv.ParseUint(string(id), 10, 64)
 	if err != nil {
@@ -144,16 +147,17 @@ func UploadProject(c *fiber.Ctx) error {
 	}
 
 	filePath := fmt.Sprintf("%s/%s/%s/%s", models.ProjectSavePath, id, projectName, file.Filename)
+
 	err = c.SaveFile(file, filePath)
 	if err != nil {
 		cmd := exec.Command("ls")
 		stdout, _ := cmd.Output()
 
 		fmt.Println(string(stdout))
-		err = os.Mkdir(fmt.Sprintf("%s/%s/%s/", models.ProjectSavePath, id, projectName), os.ModePerm)
+		err = os.Mkdir(projDirPath, os.ModePerm)
 
 		if err != nil {
-			err = os.Mkdir(fmt.Sprintf("%s/%s/", models.ProjectSavePath, id), os.ModePerm)
+			err = os.Mkdir(idDirPath, os.ModePerm)
 			if err != nil {
 				return c.JSON(fiber.Map{
 					"status":  500,
@@ -161,7 +165,14 @@ func UploadProject(c *fiber.Ctx) error {
 					"data":    nil,
 					"error":   err.Error()})
 			}
-			_ = os.Mkdir(fmt.Sprintf("%s/%s/%s/", models.ProjectSavePath, id, projectName), os.ModePerm)
+			err = os.Mkdir(projDirPath, os.ModePerm)
+			if err != nil {
+				return c.JSON(fiber.Map{
+					"status":  500,
+					"message": "Cannot create user directory",
+					"data":    nil,
+					"error":   err.Error()})
+			}
 		}
 
 		err = c.SaveFile(file, filePath)
@@ -182,10 +193,18 @@ func UploadProject(c *fiber.Ctx) error {
 	project.UserId = number
 	project.Name = projectName
 	project.Size = uint64(file.Size)
-
-	project.Link, err = convertPotreeUploaded(c, uint(project.UserId), project.Name, file)
 	project.FilePath = filePath
 
+	project.Link, err = convertPotreeUploaded(c, uint(project.UserId), project.Name, file)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  500,
+			"message": "Error during file converting: File not saved",
+			"data":    nil,
+			"error":   err})
+	}
+
+	project.Points, err = service.GetPointsAmount(filePath, projDirPath)
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  500,
@@ -314,18 +333,18 @@ func GetProjectByName(c *fiber.Ctx) error {
 		})
 	}
 
-	res := []models.Project{*project}
+	found := []models.Project{*project}
+
 	for _, val := range *projectsList {
 		if strings.Contains(val.Name, name) {
-			res = append(res, val)
-
+			found = append(found, val)
 		}
 	}
 
 	return c.JSON(fiber.Map{
 		"status":   200,
 		"message":  "Projects has been found successfully.",
-		"projects": res,
+		"projects": found,
 	})
 }
 

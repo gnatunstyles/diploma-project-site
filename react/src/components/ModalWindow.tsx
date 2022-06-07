@@ -10,9 +10,9 @@ export default function ModalVindow(props: {mode: string, closeModal: Dispatch<b
 
     const getNameOfInput = () => {
         if(props.mode === 'random'){
-            return 'Points: ';
+            return 'Decimation: ';
         } else {
-            return 'Voxels: ';
+            return 'Voxel size: ';
         }
     }
 

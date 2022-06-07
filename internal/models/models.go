@@ -20,4 +20,5 @@ type Project struct {
 	Size     uint64 `json:"size"`
 	Link     string `json:"link"`
 	FilePath string `json:"file_path"`
+	Points   uint64 `json:"points"`
 }

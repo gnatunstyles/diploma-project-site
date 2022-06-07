@@ -156,7 +156,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
                   Ваши проекты:{" "}
                 </div>
                 <input
-                  placeholder={"search..."}
+                  placeholder={"Find project..."}
                   onChange={(event) => handleSearchValueChange(event)}
                   value={searchValue}
                 />

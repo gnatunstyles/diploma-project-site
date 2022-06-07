@@ -37,3 +37,9 @@ type ProcessingGridRequest struct {
 	FilePath    string `json:"file_path"`
 	Voxel       uint64 `json:"voxel_size"`
 }
+
+type GetPointsAmountRequest struct {
+	ProjectName string `json:"project_name"`
+	UserId      uint64 `json:"user_id"`
+	FilePath    string `json:"file_path"`
+}

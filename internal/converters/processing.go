@@ -3,6 +3,7 @@ package converters
 import (
 	database "diploma-project-site/db"
 	"diploma-project-site/internal/models"
+	"diploma-project-site/internal/service"
 	"fmt"
 	"os"
 	"os/exec"
@@ -13,7 +14,7 @@ import (
 
 func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (string, error) {
 	processing := "random-sampling"
-	newProjDir := projectName + "_conv_rand/"
+	newProjDir := projectName + "_rand/"
 	fileToConvRoot := convFilePath
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, newProjDir)
 
@@ -25,7 +26,7 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 	out, err := cmd.Output()
 
 	if err != nil {
-		println(err.Error())
+		return "", err
 	}
 	fmt.Println(string(out))
 
@@ -36,7 +37,12 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 		return "", err
 	}
 
-	err = PlaceProcProjectToDB(int(id), fileName, newFilePath, link, projectName, processing)
+	points, err := service.GetPointsAmount(newFilePath, outputDir)
+	if err != nil {
+		return "", err
+	}
+
+	err = PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
 	if err != nil {
 		return "", err
 	}
@@ -47,7 +53,7 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize int) (string, error) {
 	processing := "grid-center-candidate"
 
-	newProjDir := projectName + "_conv_cand/"
+	newProjDir := projectName + "_cand/"
 	fileToConvRoot := convFilePath
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, newProjDir)
 	fileName := newProjDir[:len(newProjDir)-1]
@@ -58,7 +64,7 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 	out, err := cmd.Output()
 
 	if err != nil {
-		println(err.Error())
+		return "", err
 	}
 	fmt.Println(string(out))
 
@@ -69,7 +75,12 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 		return "", err
 	}
 
-	err = PlaceProcProjectToDB(int(id), fileName, newFilePath, link, projectName, processing)
+	points, err := service.GetPointsAmount(newFilePath, outputDir)
+	if err != nil {
+		return "", err
+	}
+
+	err = PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
 	if err != nil {
 		return "", err
 	}
@@ -80,7 +91,7 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 
 func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize int) (string, error) {
 	processing := "grid-barycenter"
-	newProjDir := projectName + "_conv_bary/"
+	newProjDir := projectName + "_bary/"
 	fileToConvRoot := convFilePath
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, newProjDir)
 	fileName := newProjDir[:len(newProjDir)-1]
@@ -92,7 +103,7 @@ func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize 
 	out, err := cmd.Output()
 
 	if err != nil {
-		println(err.Error())
+		return "", err
 	}
 	fmt.Println(string(out))
 
@@ -103,7 +114,12 @@ func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize 
 		return "", err
 	}
 
-	err = PlaceProcProjectToDB(int(id), fileName, newFilePath, link, projectName, processing)
+	points, err := service.GetPointsAmount(newFilePath, outputDir)
+	if err != nil {
+		return "", err
+	}
+
+	err = PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
 	if err != nil {
 		return "", err
 	}
@@ -117,15 +133,15 @@ func ConvertNewProcPotree(id int, newFilePath, fileName, outputDir string) (stri
 	out, err := cmd.Output()
 
 	if err != nil {
-		println(err.Error())
+		return "", err
 	}
 
 	fmt.Println(string(out))
-	link := fmt.Sprintf("%s%s/projects/%d/%s/%s.html", models.Host, models.PotreePort, id, fileName, fileName)
+	link := fmt.Sprintf("%s%s/%s/%d/%s/%s.html", models.Host, models.PotreePort, models.ProjectsDir, id, fileName, fileName)
 	return link, nil
 }
 
-func PlaceProcProjectToDB(id int, fileName, newFilePath, link, prevProj, procType string) error {
+func PlaceProcProjectToDB(id int, points uint64, fileName, newFilePath, link, prevProj, procType string) error {
 	db := database.DBConn
 
 	user := &models.User{}
@@ -150,6 +166,7 @@ func PlaceProcProjectToDB(id int, fileName, newFilePath, link, prevProj, procTyp
 			procType, prevProj),
 		Link:     link,
 		FilePath: newFilePath,
+		Points:   uint64(points),
 	}
 
 	user.AvailableSpace -= project.Size

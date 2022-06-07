@@ -33,6 +33,7 @@ last_seen = 0
 for index, voxel in enumerate(non_empty_voxel_keys):
     voxel_grid[tuple(
         voxel)] = transponded_pts[idx_pts_vox_sorted[last_seen:last_seen+points_per_voxel[index]]]
+
     grid_candidate_center.append(voxel_grid[tuple(voxel)][np.linalg.norm(
         voxel_grid[tuple(voxel)] - np.mean(voxel_grid[tuple(voxel)], axis=0), axis=1).argmin()])
     last_seen += points_per_voxel[index]

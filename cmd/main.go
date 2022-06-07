@@ -32,4 +32,5 @@ func main() {
 	database.InitDB(cfg.DBConnString)
 
 	app.Listen(models.BackendPort)
+
 }
