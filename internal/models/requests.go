@@ -43,3 +43,9 @@ type GetPointsAmountRequest struct {
 	UserId      uint64 `json:"user_id"`
 	FilePath    string `json:"file_path"`
 }
+
+type DownloadProjectRequest struct {
+	ProjectName string `json:"project_name"`
+	UserId      uint64 `json:"user_id"`
+	FilePath    string `json:"file_path"`
+}

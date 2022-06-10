@@ -21,7 +21,7 @@ func main() {
 	}
 
 	app := fiber.New(fiber.Config{
-		BodyLimit: 4 * 1024 * 1024 * 1024,
+		BodyLimit: 10 * 1024 * 1024 * 1024,
 	})
 
 	app.Use(cors.New(cors.Config{
@@ -30,6 +30,8 @@ func main() {
 
 	routes.InitRoutes(app)
 	database.InitDB(cfg.DBConnString)
+
+	// cer, err := tls.LoadX509KeyPair("")
 
 	app.Listen(models.BackendPort)
 

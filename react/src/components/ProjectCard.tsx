@@ -1,17 +1,17 @@
-import {Dispatch, SyntheticEvent, useEffect, useState} from "react";
+import { Dispatch, SyntheticEvent, useEffect, useState } from "react";
 import styles from "../styles/projectCard.module.sass";
-import {IProj} from "./ProjectsLayout";
+import { IProj } from "./ProjectsLayout";
+import Warning from "./Warning";
 
-const MILLIARD = 1000000000;
+const BYTES = 1073741824;
 
 export default function ProjectCard(props: {
-    proj: IProj,
-    setMode: Dispatch<string>,
-    openModal: Dispatch<boolean> ,
-    setSelectedProj: Dispatch<IProj>
-    onClickDelete: (itemId: any, proj_name: string) => void
+  proj: IProj;
+  setMode: Dispatch<string>;
+  openModal: Dispatch<boolean>;
+  setSelectedProj: Dispatch<IProj>;
+  onClickDelete: (itemId: any, proj_name: string) => void;
 }) {
-
   //     ID: 10,
   //     CreatedAt: "2022-05-26T21:34:18.144414+03:00",
   //     UpdatedAt: "2022-05-26T22:38:07.510554+03:00",
@@ -22,12 +22,12 @@ export default function ProjectCard(props: {
   //     size: 185075623,
   //     link: "http://localhost:1234/projects/1/kekich.html"
 
-  const onClickButtonsProcessing = (e : any) => {
-      console.log(e.target.value);
-      props.setMode(e.target.value);
-      props.setSelectedProj(props.proj)
-      props.openModal(true)
-  }
+  const onClickButtonsProcessing = (e: any) => {
+    console.log(e.target.value);
+    props.setMode(e.target.value);
+    props.setSelectedProj(props.proj);
+    props.openModal(true);
+  };
 
   let link = props.proj.link;
   return (
@@ -41,7 +41,11 @@ export default function ProjectCard(props: {
             Описание: {props.proj.info}
           </div>
           <div className={styles.itemBodyListParamsListItem}>
-            Размер: {(props.proj.size / MILLIARD).toFixed(3)} GB
+            Размер: {(props.proj.size / BYTES).toFixed(3)} GB
+          </div>
+          <div className={styles.itemBodyListParamsListItem}>
+            Количество точек: {props.proj.points}
+            {props.proj.points > 10000000 && <Warning />}
           </div>
         </div>
         <div className="modal-footer flex-column border-top-0">
@@ -54,6 +58,17 @@ export default function ProjectCard(props: {
           >
             Open
           </a>
+          <button
+            type="button"
+            className="btn btn-outline-primary w-100 mx-0"
+            data-bs-dismiss="modal"
+            onClick={() =>
+              props.onClickDelete(props.proj.ID, props.proj.project_name)
+            }
+          >
+            Download
+          </button>
+
           <button
             onClick={() => navigator.clipboard.writeText(`${link}`)}
             type="submit"
@@ -68,8 +83,7 @@ export default function ProjectCard(props: {
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
             onClick={(event) => onClickButtonsProcessing(event)}
-            value={'random'}
-
+            value={"random"}
           >
             Processing (Random Sampling)
           </button>
@@ -78,8 +92,7 @@ export default function ProjectCard(props: {
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
             onClick={(event) => onClickButtonsProcessing(event)}
-            value={'barycenter'}
-
+            value={"barycenter"}
           >
             Processing (Grid Barycenter)
           </button>
@@ -88,8 +101,7 @@ export default function ProjectCard(props: {
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
             onClick={(event) => onClickButtonsProcessing(event)}
-            value={'candidate'}
-
+            value={"candidate"}
           >
             Processing (Grid Candidate)
           </button>
@@ -97,7 +109,9 @@ export default function ProjectCard(props: {
             type="button"
             className="btn btn-outline-dark w-100 mx-0"
             data-bs-dismiss="modal"
-            onClick={() => props.onClickDelete(props.proj.ID, props.proj.project_name)}
+            onClick={() =>
+              props.onClickDelete(props.proj.ID, props.proj.project_name)
+            }
           >
             Delete
           </button>

@@ -348,6 +348,32 @@ func GetProjectByName(c *fiber.Ctx) error {
 	})
 }
 
+func DownloadProject(c *fiber.Ctx) error {
+	req := &models.DownloadProjectRequest{}
+	err := c.BodyParser(&req)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  400,
+			"message": "Error. Wrong type of incoming request.",
+			"error":   err,
+		})
+	}
+
+	err = c.Download(req.FilePath)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  500,
+			"message": "Error during file downloading.",
+			"error":   err,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  200,
+		"message": "File downloaded successfully.",
+	})
+}
+
 func convertPotreeUploaded(c *fiber.Ctx, id uint, projectName string, f *multipart.FileHeader) (string, error) {
 	inputRoot := fmt.Sprintf("%s/%d/%s/%s", models.ProjectSavePath, id, projectName, f.Filename)
 	fmt.Println(inputRoot)

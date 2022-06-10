@@ -32,6 +32,7 @@ func RandomProcessingHandler(c *fiber.Ctx) error {
 		"body":    ans,
 	})
 }
+
 func GridCandidateProcessingHandler(c *fiber.Ctx) error {
 	req := &models.ProcessingGridRequest{}
 	err := c.BodyParser(&req)

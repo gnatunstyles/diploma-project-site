@@ -17,6 +17,7 @@ export interface IProj {
   size: number;
   file_path: string;
   link: string;
+  points: number;
 }
 
 const getInitialState = {
@@ -30,6 +31,7 @@ const getInitialState = {
   size: 0,
   file_path: "",
   link: "",
+  points: 0
 };
 
 export default function ProjectsLayout(props: { user: any; id: number }) {
