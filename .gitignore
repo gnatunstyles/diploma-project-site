@@ -10,3 +10,4 @@ Makefile
 *.las
 /secret
 /tls
+/NZ19_Wellington.las:Zone.Identifier
