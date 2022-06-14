@@ -137,7 +137,7 @@ func ConvertNewProcPotree(id int, newFilePath, fileName, outputDir string) (stri
 	}
 
 	fmt.Println(string(out))
-	link := fmt.Sprintf("%s%s/%s/%d/%s/%s.html", models.Host, models.PotreePort, models.ProjectsDir, id, fileName, fileName)
+	link := fmt.Sprintf("%s%s/%s/%d/%s/%s.html", models.PotreeHost, models.PotreePort, models.ProjectsDir, id, fileName, fileName)
 	return link, nil
 }
 

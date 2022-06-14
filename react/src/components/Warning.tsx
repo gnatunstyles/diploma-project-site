@@ -6,7 +6,7 @@ export default function Warning() {
   return (
     <div className={styles.container}>
       {show && <div className={styles.message}>
-        Amount of points is above 10 million points. It can be displayed incorrectly. <br/>Please, make processing fo better experience.
+        Amount of points is above 10 million points. It can be displayed incorrectly. <br/>Please, make processing for better experience.
         </div>}
       <div className={styles.warning}
         onMouseEnter={() => {

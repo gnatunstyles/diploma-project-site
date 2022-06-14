@@ -18,7 +18,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:8000/api/user", {
+      const response = await fetch("https://localhost:8000/api/user", {
         headers: { "Content-Type": "application/json" },
         credentials: "include", //cookie getter
       });

@@ -19,7 +19,7 @@ export default function ModalVindow(props: {mode: string, closeModal: Dispatch<b
     const random = async () => {
         alert(props.proj.project_name)
         const response = await fetch(
-            `http://localhost:8000/api/processing/random`,
+            `https://localhost:8000/api/processing/random`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -38,7 +38,7 @@ export default function ModalVindow(props: {mode: string, closeModal: Dispatch<b
 
     const barycenter = async () => {
         const response = await fetch(
-            `http://localhost:8000/api/processing/barycenter`,
+            `https://localhost:8000/api/processing/barycenter`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -57,7 +57,7 @@ export default function ModalVindow(props: {mode: string, closeModal: Dispatch<b
 
     const candidate = async () => {
         const response = await fetch(
-            `http://localhost:8000/api/processing/candidate`,
+            `https://localhost:8000/api/processing/candidate`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

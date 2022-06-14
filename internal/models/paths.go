@@ -9,5 +9,5 @@ const ProcessingGridCandidatePath = "processing-scripts/grid-candidate/grid_cand
 const ProcessingGridBarycenterPath = "processing-scripts/grid-barycenter/grid_barycenter.py"
 const PointsFileName = "points_amount.txt"
 const PythonVersion = "python3"
-
-// const CertPa
+const CertPath = "tls/cert.pem"
+const KeyPath = "tls/key.pem"

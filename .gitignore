@@ -9,4 +9,4 @@ Makefile
 /convert_test
 *.las
 /secret
-/cert
+/tls

@@ -9,7 +9,7 @@ const Login = (props: { setName: (username: string) => void }) => {
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:8000/api/sign-in", {
+    const response = await fetch("https://localhost:8000/api/sign-in", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", //cookie getter

@@ -1,5 +1,5 @@
 export const getProjectsOfUser =  async (id:any) => {
-    let res = await fetch(`http://localhost:1234/projects/${id}`, {
+    let res = await fetch(`https://localhost:1234/projects/${id}`, {
 
         headers: { "Content-Type": "application/json" },
         credentials: "include", //cookie getter

@@ -1,3 +1,4 @@
 package models
 
-const Host string = "http://localhost"
+const Host string = "https://localhost"
+const PotreeHost string = "http://localhost"

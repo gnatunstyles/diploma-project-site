@@ -19,7 +19,7 @@ export default function Upload(props: { userid: number }) {
       formData.append("cloud", file, file.name);
       console.log(formData);
       const response = await fetch(
-        `http://localhost:8000/api/projects/upload/${props.userid}/${file?.name}`,
+        `https://localhost:8000/api/projects/upload/${props.userid}/${file?.name}`,
         {
           method: "POST",
           headers: { "Content-Type": "multipart/form-data" },

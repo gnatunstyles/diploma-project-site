@@ -9,7 +9,7 @@ const Register = () => {
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    await fetch("http://localhost:8000/api/sign-up", {
+    await fetch("https://localhost:8000/api/sign-up", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password }),
@@ -55,9 +55,8 @@ const Register = () => {
         />
         <label htmlFor="floatingPassword">Password</label>
       </div>
-
       <button className="w-100 btn btn-lg btn-primary" type="submit">
-        Submit
+        Sign up
       </button>
     </form>
   );

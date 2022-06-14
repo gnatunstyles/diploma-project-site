@@ -9,7 +9,7 @@ const Nav = (props: {
     const [buttonDisabled, setButtonDisabled] = useState(false)
 
   const logout = async () => {
-    await fetch("http://localhost:8000/api/user/logout", {
+    await fetch("https://localhost:8000/api/user/logout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

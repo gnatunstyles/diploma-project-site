@@ -387,6 +387,6 @@ func convertPotreeUploaded(c *fiber.Ctx, id uint, projectName string, f *multipa
 	}
 
 	fmt.Println(string(stdout))
-	link := fmt.Sprintf("%s%s/projects/%d/%s/%s.html", models.Host, models.PotreePort, id, projectName, projectName)
+	link := fmt.Sprintf("%s%s/projects/%d/%s/%s.html", models.PotreeHost, models.PotreePort, id, projectName, projectName)
 	return link, nil
 }

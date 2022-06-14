@@ -4,7 +4,7 @@ const Projects = () => {
   const [username, setName] = useState(""); //handle states [{variable}, {function, that changes variable}]
 
   const openProject = async () => {
-    const response = await fetch("http://localhost:1234/examples/lion.html");
+    const response = await fetch("https://localhost:1234/examples/lion.html");
     return response;
   };
 

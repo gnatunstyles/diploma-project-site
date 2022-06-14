@@ -51,7 +51,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
       console.log(searchValue, props.id);
       if (submittedValue === "") {
         const response = await fetch(
-          `http://localhost:8000/api/projects/${props.id}`,
+          `https://localhost:8000/api/projects/${props.id}`,
           {
             headers: { "Content-Type": "application/json" },
             credentials: "include", //cookie getter
@@ -61,7 +61,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
         setProjects(content.projects);
       } else {
         const response = await fetch(
-          `http://localhost:8000/api/projects/find/${props.id}/${submittedValue}`,
+          `https://localhost:8000/api/projects/find/${props.id}/${submittedValue}`,
           {
             headers: { "Content-Type": "application/json" },
             credentials: "include", //cookie getter
@@ -115,7 +115,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
 
   const deleteProj = async (proj_name: string) => {
     const response = await fetch(
-      `http://localhost:8000/api/projects/delete/${proj_name}`,
+      `https://localhost:8000/api/projects/delete/${proj_name}`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

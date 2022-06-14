@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	database "diploma-project-site/db"
 	"diploma-project-site/internal/config"
 	"diploma-project-site/internal/models"
@@ -14,7 +15,6 @@ import (
 
 func main() {
 	cfg, err := config.New()
-
 	if err != nil {
 		log.Fatal().Err(err).Msg("Error during the config reading")
 		return
@@ -31,8 +31,11 @@ func main() {
 	routes.InitRoutes(app)
 	database.InitDB(cfg.DBConnString)
 
-	// cer, err := tls.LoadX509KeyPair("")
+	ln, err := tls.Listen("tcp", models.BackendPort, cfg.Tls)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error during listener init")
+		return
+	}
 
-	app.Listen(models.BackendPort)
-
+	app.Listener(ln)
 }
