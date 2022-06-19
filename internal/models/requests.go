@@ -49,3 +49,7 @@ type DownloadProjectRequest struct {
 	UserId      uint64 `json:"user_id"`
 	FilePath    string `json:"file_path"`
 }
+
+type PasswordResetRequest struct {
+	Email string `json:"email"`
+}

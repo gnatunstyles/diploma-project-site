@@ -5,9 +5,7 @@ import (
 	"diploma-project-site/internal/models"
 	"diploma-project-site/internal/service"
 	"fmt"
-	"mime/multipart"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -25,13 +23,13 @@ func UpdateProject(c *fiber.Ctx) error {
 	db := database.DBConn
 	projectName := c.Params("project_name")
 
-	p := &models.Project{}
+	proj := &models.Project{}
 	upd := &models.ProjectUpdateRequest{}
 
-	db.Where("name = ?", projectName).First(&p)
-	if p.ID == 0 {
+	db.Where("name = ?", projectName).First(&proj)
+	if proj.ID == 0 {
 		return c.JSON(fiber.Map{
-			"status":  400,
+			"status":  404,
 			"message": "Error. Project with this ID not exists.",
 			"data":    nil})
 	}
@@ -45,45 +43,46 @@ func UpdateProject(c *fiber.Ctx) error {
 	}
 
 	if upd.NewName != "" {
-		p.Name = upd.NewName
+		proj.Name = upd.NewName
 	}
 
 	if upd.NewInfo != "" {
-		p.Info = upd.NewInfo
+		proj.Info = upd.NewInfo
 	}
 
-	db.Save(&p)
+	db.Save(&proj)
 
 	return c.JSON(fiber.Map{
 		"status":  200,
 		"message": "Project info updated successfully.",
-		"project": p,
+		"project": proj,
 	})
 
 }
 
 func DeleteProject(c *fiber.Ctx) error {
 	db := database.DBConn
-	project := &models.Project{}
+	proj := &models.Project{}
 	projectName := c.Params("project_name")
-	db.Where("name = ?", projectName).First(&project)
+	db.Where("name = ?", projectName).First(&proj)
 
-	if project.ID == 0 {
+	if proj.ID == 0 {
 		return c.JSON(fiber.Map{
-			"status":  500,
+			"status":  404,
 			"message": "Project not found.",
 		})
 	}
 
 	user := &models.User{}
-	db.First(&user, project.UserId)
+	db.First(&user, proj.UserId)
 
 	if user.ID == 0 {
 		return c.JSON(fiber.Map{
-			"status":  500,
+			"status":  404,
 			"message": "Error. User with this ID not found",
 			"data":    nil})
 	}
+
 	err := os.RemoveAll(fmt.Sprintf("%s/%d/%s/", models.ProjectSavePath, user.ID, projectName))
 	if err != nil {
 		fmt.Println(err)
@@ -93,11 +92,11 @@ func DeleteProject(c *fiber.Ctx) error {
 			"data":    nil})
 	}
 
-	user.AvailableSpace += uint64(project.Size)
-	user.UsedSpace -= uint64(project.Size)
+	user.AvailableSpace += uint64(proj.Size)
+	user.UsedSpace -= uint64(proj.Size)
 	user.ProjectNumber--
 
-	db.Delete(&project)
+	db.Delete(&proj)
 	db.Save(&user)
 
 	return c.JSON(fiber.Map{
@@ -146,14 +145,11 @@ func UploadProject(c *fiber.Ctx) error {
 			"data":    nil})
 	}
 
-	filePath := fmt.Sprintf("%s/%s/%s/%s", models.ProjectSavePath, id, projectName, file.Filename)
+	filePath := fmt.Sprintf("%s/%s/%s/%s",
+		models.ProjectSavePath, id, projectName, file.Filename)
 
 	err = c.SaveFile(file, filePath)
 	if err != nil {
-		cmd := exec.Command("ls")
-		stdout, _ := cmd.Output()
-
-		fmt.Println(string(stdout))
 		err = os.Mkdir(projDirPath, os.ModePerm)
 
 		if err != nil {
@@ -195,7 +191,7 @@ func UploadProject(c *fiber.Ctx) error {
 	project.Size = uint64(file.Size)
 	project.FilePath = filePath
 
-	project.Link, err = convertPotreeUploaded(c, uint(project.UserId), project.Name, file)
+	project.Link, err = service.ConvertPotreeUploaded(uint(project.UserId), project.Name, file)
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  500,
@@ -208,17 +204,16 @@ func UploadProject(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  500,
-			"message": "Error during file converting: File not saved",
+			"message": "Error during points getting: File not saved",
 			"data":    nil,
 			"error":   err})
 	}
 
+	db.Create(project)
+
 	fmt.Println(&project)
 
 	fmt.Println("converted")
-
-	db.Create(project)
-
 	user.AvailableSpace -= uint64(project.Size)
 	user.UsedSpace += uint64(project.Size)
 	user.ProjectNumber++
@@ -235,23 +230,23 @@ func UploadProject(c *fiber.Ctx) error {
 
 func ShareProjectLink(c *fiber.Ctx) error {
 	db := database.DBConn
-	pName := c.Params("project_name")
+	projectName := c.Params("project_name")
 	p := &models.Project{}
 
-	db.Where("name = ?", pName).First(&p)
+	db.Where("name = ?", projectName).First(&p)
 
 	if p.ID == 0 {
 		return c.JSON(fiber.Map{
 			"status":  400,
 			"message": "Error. Project with this name not exists.",
-			"data":    nil})
+		})
 	}
 
 	return c.JSON(fiber.Map{
 		"status":  200,
 		"message": "Project link has been returned.",
 		"link":    p.Link,
-		"data":    nil})
+	})
 }
 
 func GetAllProjectsByUserId(c *fiber.Ctx) error {
@@ -280,11 +275,13 @@ func GetAllProjectsByUserId(c *fiber.Ctx) error {
 	db.Where("user_id = ?", user.ID).Find(&projectsList)
 	if len(*projectsList) == 0 {
 		return c.JSON(fiber.Map{
+			"status":   200,
 			"message":  "this user has no active projects",
 			"projects": projectsList,
 		})
 	}
 	return c.JSON(fiber.Map{
+		"status":   200,
 		"message":  "success",
 		"projects": projectsList,
 	})
@@ -295,13 +292,12 @@ func GetProjectByName(c *fiber.Ctx) error {
 	db := database.DBConn
 	id := c.Params("id")
 	number, err := strconv.ParseUint(string(id), 10, 64)
-	project := &models.Project{}
 
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  500,
 			"message": "Error during parsing ID.",
-			"data":    nil})
+		})
 	}
 
 	user := &models.User{}
@@ -312,7 +308,7 @@ func GetProjectByName(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"status":  400,
 			"message": "Error. User with this ID not found.",
-			"data":    nil})
+		})
 	}
 
 	db.Where("user_id = ?", user.ID).Find(&projectsList)
@@ -333,7 +329,7 @@ func GetProjectByName(c *fiber.Ctx) error {
 		})
 	}
 
-	found := []models.Project{*project}
+	found := []models.Project{}
 
 	for _, val := range *projectsList {
 		if strings.Contains(val.Name, name) {
@@ -372,21 +368,4 @@ func DownloadProject(c *fiber.Ctx) error {
 		"status":  200,
 		"message": "File downloaded successfully.",
 	})
-}
-
-func convertPotreeUploaded(c *fiber.Ctx, id uint, projectName string, f *multipart.FileHeader) (string, error) {
-	inputRoot := fmt.Sprintf("%s/%d/%s/%s", models.ProjectSavePath, id, projectName, f.Filename)
-	fmt.Println(inputRoot)
-	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, projectName)
-
-	cmd := exec.Command(models.ConverterBuildPath, models.InputFlag, inputRoot, models.ProjectNameFlag, projectName, models.OutputFlag, outputDir)
-	stdout, err := cmd.Output()
-
-	if err != nil {
-		return "", err
-	}
-
-	fmt.Println(string(stdout))
-	link := fmt.Sprintf("%s%s/projects/%d/%s/%s.html", models.PotreeHost, models.PotreePort, id, projectName, projectName)
-	return link, nil
 }

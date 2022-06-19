@@ -1,10 +1,11 @@
-package converters
+package service
 
 import (
 	database "diploma-project-site/db"
 	"diploma-project-site/internal/models"
-	"diploma-project-site/internal/service"
 	"fmt"
+	"io/ioutil"
+	"mime/multipart"
 	"os"
 	"os/exec"
 	"strconv"
@@ -37,7 +38,7 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 		return "", err
 	}
 
-	points, err := service.GetPointsAmount(newFilePath, outputDir)
+	points, err := GetPointsAmount(newFilePath, outputDir)
 	if err != nil {
 		return "", err
 	}
@@ -75,7 +76,7 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 		return "", err
 	}
 
-	points, err := service.GetPointsAmount(newFilePath, outputDir)
+	points, err := GetPointsAmount(newFilePath, outputDir)
 	if err != nil {
 		return "", err
 	}
@@ -114,7 +115,7 @@ func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize 
 		return "", err
 	}
 
-	points, err := service.GetPointsAmount(newFilePath, outputDir)
+	points, err := GetPointsAmount(newFilePath, outputDir)
 	if err != nil {
 		return "", err
 	}
@@ -177,4 +178,50 @@ func PlaceProcProjectToDB(id int, points uint64, fileName, newFilePath, link, pr
 
 	db.Create(&project)
 	return nil
+}
+
+func GetPointsAmount(filePath, outputDir string) (uint64, error) {
+	cmd := exec.Command(models.PythonVersion, models.GetPointsAmountPath, filePath, outputDir, models.PointsFileName)
+	out, err := cmd.Output()
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println(string(out))
+
+	path := outputDir + models.PointsFileName
+
+	buf, err := ioutil.ReadFile(path) // just pass the file name
+	if err != nil {
+		return 0, err
+	}
+
+	pointsNum, err := strconv.Atoi(string(buf))
+	if err != nil {
+		return 0, err
+	}
+
+	err = os.Remove(path)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint64(pointsNum), nil
+}
+
+func ConvertPotreeUploaded(id uint, projectName string, f *multipart.FileHeader) (string, error) {
+	inputRoot := fmt.Sprintf("%s/%d/%s/%s", models.ProjectSavePath, id, projectName, f.Filename)
+	fmt.Println(inputRoot)
+	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, projectName)
+
+	cmd := exec.Command(models.ConverterBuildPath, models.InputFlag, inputRoot, models.ProjectNameFlag, projectName, models.OutputFlag, outputDir)
+	stdout, err := cmd.Output()
+
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Println(string(stdout))
+	link := fmt.Sprintf("%s%s/projects/%d/%s/%s.html", models.PotreeHost, models.PotreePort, id, projectName, projectName)
+	return link, nil
 }
