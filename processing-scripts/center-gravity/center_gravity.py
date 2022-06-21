@@ -29,16 +29,16 @@ indexes_points_vox_sorted = np.argsort(inverse)
 
 grid = {}
 gravity_center_list = []
-last_seen = 0
+last = 0
 
 for index, voxel in enumerate(non_empty_voxel_keys):
     grid[tuple(
         voxel)] = transponded_pts[
-            indexes_points_vox_sorted[last_seen:last_seen+points_num_per_voxel[index]]]
+            indexes_points_vox_sorted[last:last+points_num_per_voxel[index]]]
 
     gravity_center_list.append(np.mean(grid[tuple(voxel)], axis=0))
 
-    last_seen += points_num_per_voxel[index]
+    last += points_num_per_voxel[index]
 
 sampled = gravity_center_list
 

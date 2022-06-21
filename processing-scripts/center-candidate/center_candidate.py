@@ -27,15 +27,15 @@ idx_pts_vox_sorted = np.argsort(inverse)
 
 grid = {}
 candidate_center_list = []
-last_seen = 0
+last = 0
 
 for index, voxel in enumerate(non_empty_voxel_keys):
     grid[tuple(
-        voxel)] = transponded_pts[idx_pts_vox_sorted[last_seen:last_seen+points_per_voxel[index]]]
+        voxel)] = transponded_pts[idx_pts_vox_sorted[last:last+points_per_voxel[index]]]
 
     candidate_center_list.append(grid[tuple(voxel)][np.linalg.norm(
         grid[tuple(voxel)] - np.mean(grid[tuple(voxel)], axis=0), axis=1).argmin()])
-    last_seen += points_per_voxel[index]
+    last += points_per_voxel[index]
 
 sampled = candidate_center_list
 

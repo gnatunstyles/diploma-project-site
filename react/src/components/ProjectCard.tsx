@@ -12,6 +12,7 @@ export default function ProjectCard(props: {
   openModal: Dispatch<boolean>;
   setSelectedProj: Dispatch<IProj>;
   onClickDelete: (itemId: any, proj_name: string) => void;
+  onClickDownload:(itemId: any, proj_name: string)=> void;
 }) {
   //     ID: 10,
   //     CreatedAt: "2022-05-26T21:34:18.144414+03:00",
@@ -66,6 +67,9 @@ export default function ProjectCard(props: {
             type="button"
             className="btn btn-outline-primary w-100 mx-0"
             data-bs-dismiss="modal"
+            onClick={() =>
+              props.onClickDownload(props.proj.ID, props.proj.project_name)
+            }
           >
             Download
           </Link>

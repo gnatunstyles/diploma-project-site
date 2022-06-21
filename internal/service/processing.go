@@ -13,8 +13,8 @@ import (
 )
 
 func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (string, error) {
-	processing := "random-sampling"
-	newProjDir := projectName + "_rand/"
+	processing := "thinning"
+	newProjDir := projectName + "_thin/"
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, newProjDir)
 	fileName := newProjDir[:len(newProjDir)-1]
 	os.Mkdir(outputDir, os.ModePerm)

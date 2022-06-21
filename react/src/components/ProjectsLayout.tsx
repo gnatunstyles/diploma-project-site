@@ -94,6 +94,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
             proj={projects[i]}
             setSelectedProj={setSelectedProj}
             onClickDelete={onDeleteItem}
+            onClickDownload={onDownloadItem}
             setMode={setMode}
             openModal={setShowModal}
           />
@@ -111,6 +112,11 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
     console.log(newArr);
     setProjects(newArr);
     deleteProj(proj_name);
+  };
+  
+  const onDownloadItem = (itemId: any, proj_name: string) => {
+    console.log(itemId);
+    downloadProj(proj_name);
   };
 
   const deleteProj = async (proj_name: string) => {
