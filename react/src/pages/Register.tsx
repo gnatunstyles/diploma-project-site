@@ -1,5 +1,6 @@
 import React, { SyntheticEvent, useState } from "react";
 import { Navigate } from "react-router-dom";
+import styles from '../styles/leftMenu.module.sass'
 
 const Register = () => {
   const [username, setName] = useState(""); //handle states [{variable}, {function, that changes variable}]
@@ -23,7 +24,7 @@ const Register = () => {
   }
 
   return (
-    <form onSubmit={submit}>
+    <form  className={styles.wrapper} onSubmit={submit}>
       <h1 className="h3 mb-3 fw-normal">Please sign up</h1>
 
       <div className="form-floating">

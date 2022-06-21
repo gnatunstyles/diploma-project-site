@@ -1,6 +1,5 @@
 import sys
 import laspy as lp
-import numpy as np
 
 args = sys.argv
 # todo: give with sys args file saving dir to save point amount to it

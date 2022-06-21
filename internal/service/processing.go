@@ -3,27 +3,24 @@ package service
 import (
 	database "diploma-project-site/db"
 	"diploma-project-site/internal/models"
+
 	"fmt"
 	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"os/exec"
 	"strconv"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (string, error) {
 	processing := "random-sampling"
 	newProjDir := projectName + "_rand/"
-	fileToConvRoot := convFilePath
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, newProjDir)
-
 	fileName := newProjDir[:len(newProjDir)-1]
 	os.Mkdir(outputDir, os.ModePerm)
 	fmt.Println("check")
 
-	cmd := exec.Command(models.PythonVersion, models.ProcessingRandomPath, fileToConvRoot, outputDir, fileName, strconv.Itoa(factor))
+	cmd := exec.Command(models.PythonVersion, models.ProcessingRandomPath, convFilePath, outputDir, fileName, strconv.Itoa(factor))
 	out, err := cmd.Output()
 
 	if err != nil {
@@ -33,7 +30,7 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 
 	newFilePath := outputDir + fileName + ".las"
 
-	link, err := ConvertNewProcPotree(int(id), newFilePath, fileName, outputDir)
+	link, err := convertNewProcPotree(int(id), newFilePath, fileName, outputDir)
 	if err != nil {
 		return "", err
 	}
@@ -43,7 +40,7 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 		return "", err
 	}
 
-	err = PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
+	err = database.PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
 	if err != nil {
 		return "", err
 	}
@@ -53,15 +50,17 @@ func ConvertProcRand(projectName, convFilePath string, id uint, factor int) (str
 
 func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize int) (string, error) {
 	processing := "grid-center-candidate"
-
 	newProjDir := projectName + "_cand/"
-	fileToConvRoot := convFilePath
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, newProjDir)
 	fileName := newProjDir[:len(newProjDir)-1]
 
-	os.Mkdir(outputDir, os.ModePerm)
+	err := os.Mkdir(outputDir, os.ModePerm)
+	if err != nil {
+		return "", err
+	}
 	fmt.Println("check")
-	cmd := exec.Command(models.PythonVersion, models.ProcessingGridCandidatePath, fileToConvRoot, outputDir, fileName, strconv.Itoa(voxelSize))
+	cmd := exec.Command(models.PythonVersion, models.ProcessingGridCandidatePath,
+		convFilePath, outputDir, fileName, strconv.Itoa(voxelSize))
 	out, err := cmd.Output()
 
 	if err != nil {
@@ -71,7 +70,7 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 
 	newFilePath := outputDir + fileName + ".las"
 
-	link, err := ConvertNewProcPotree(int(id), newFilePath, fileName, outputDir)
+	link, err := convertNewProcPotree(int(id), newFilePath, fileName, outputDir)
 	if err != nil {
 		return "", err
 	}
@@ -81,7 +80,7 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 		return "", err
 	}
 
-	err = PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
+	err = database.PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
 	if err != nil {
 		return "", err
 	}
@@ -93,14 +92,13 @@ func ConvertProcCandidate(projectName, convFilePath string, id uint, voxelSize i
 func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize int) (string, error) {
 	processing := "grid-barycenter"
 	newProjDir := projectName + "_bary/"
-	fileToConvRoot := convFilePath
 	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, newProjDir)
 	fileName := newProjDir[:len(newProjDir)-1]
 
 	os.Mkdir(outputDir, os.ModePerm)
 	fmt.Println("check")
 
-	cmd := exec.Command(models.PythonVersion, models.ProcessingGridBarycenterPath, fileToConvRoot, outputDir, fileName, strconv.Itoa(voxelSize))
+	cmd := exec.Command(models.PythonVersion, models.ProcessingGridBarycenterPath, convFilePath, outputDir, fileName, strconv.Itoa(voxelSize))
 	out, err := cmd.Output()
 
 	if err != nil {
@@ -110,17 +108,20 @@ func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize 
 
 	newFilePath := outputDir + fileName + ".las"
 
-	link, err := ConvertNewProcPotree(int(id), newFilePath, fileName, outputDir)
+	link, err := convertNewProcPotree(
+		int(id), newFilePath, fileName, outputDir)
 	if err != nil {
 		return "", err
 	}
 
-	points, err := GetPointsAmount(newFilePath, outputDir)
+	points, err := GetPointsAmount(
+		newFilePath, outputDir)
 	if err != nil {
 		return "", err
 	}
 
-	err = PlaceProcProjectToDB(int(id), points, fileName, newFilePath, link, projectName, processing)
+	err = database.PlaceProcProjectToDB(
+		int(id), points, fileName, newFilePath, link, projectName, processing)
 	if err != nil {
 		return "", err
 	}
@@ -129,7 +130,7 @@ func ConvertProcBarycenter(projectName, convFilePath string, id uint, voxelSize 
 
 }
 
-func ConvertNewProcPotree(id int, newFilePath, fileName, outputDir string) (string, error) {
+func convertNewProcPotree(id int, newFilePath, fileName, outputDir string) (string, error) {
 	cmd := exec.Command(models.ConverterBuildPath, models.InputFlag, newFilePath, models.ProjectNameFlag, fileName, models.OutputFlag, outputDir)
 	out, err := cmd.Output()
 
@@ -140,44 +141,6 @@ func ConvertNewProcPotree(id int, newFilePath, fileName, outputDir string) (stri
 	fmt.Println(string(out))
 	link := fmt.Sprintf("%s%s/%s/%d/%s/%s.html", models.PotreeHost, models.PotreePort, models.ProjectsDir, id, fileName, fileName)
 	return link, nil
-}
-
-func PlaceProcProjectToDB(id int, points uint64, fileName, newFilePath, link, prevProj, procType string) error {
-	db := database.DBConn
-
-	user := &models.User{}
-	db.First(&user, id)
-	if user.ID == 0 {
-		return &fiber.Error{
-			Code:    404,
-			Message: "User not found."}
-	}
-
-	fileInfo, err := os.Stat(newFilePath)
-
-	if err != nil {
-		return err
-	}
-
-	project := &models.Project{
-		UserId: uint64(id),
-		Name:   fileName,
-		Size:   uint64(fileInfo.Size()),
-		Info: fmt.Sprintf("This point cloud was processed using %s algorithm. \nPrevious state of this cloud is %s project.",
-			procType, prevProj),
-		Link:     link,
-		FilePath: newFilePath,
-		Points:   uint64(points),
-	}
-
-	user.AvailableSpace -= project.Size
-	user.UsedSpace += project.Size
-	user.ProjectNumber++
-
-	db.Save(&user)
-
-	db.Create(&project)
-	return nil
 }
 
 func GetPointsAmount(filePath, outputDir string) (uint64, error) {
@@ -210,11 +173,13 @@ func GetPointsAmount(filePath, outputDir string) (uint64, error) {
 }
 
 func ConvertPotreeUploaded(id uint, projectName string, f *multipart.FileHeader) (string, error) {
-	inputRoot := fmt.Sprintf("%s/%d/%s/%s", models.ProjectSavePath, id, projectName, f.Filename)
-	fmt.Println(inputRoot)
-	outputDir := fmt.Sprintf("%s/%d/%s", models.ProjectSavePath, id, projectName)
+	inputRoot := fmt.Sprintf("%s/%d/%s/%s",
+		models.ProjectSavePath, id, projectName, f.Filename)
+	outputDir := fmt.Sprintf("%s/%d/%s",
+		models.ProjectSavePath, id, projectName)
 
-	cmd := exec.Command(models.ConverterBuildPath, models.InputFlag, inputRoot, models.ProjectNameFlag, projectName, models.OutputFlag, outputDir)
+	cmd := exec.Command(models.ConverterBuildPath, models.InputFlag, inputRoot,
+		models.ProjectNameFlag, projectName, models.OutputFlag, outputDir)
 	stdout, err := cmd.Output()
 
 	if err != nil {
@@ -222,6 +187,8 @@ func ConvertPotreeUploaded(id uint, projectName string, f *multipart.FileHeader)
 	}
 
 	fmt.Println(string(stdout))
-	link := fmt.Sprintf("%s%s/projects/%d/%s/%s.html", models.PotreeHost, models.PotreePort, id, projectName, projectName)
+	link := fmt.Sprintf("%s%s/%s/%d/%s/%s.html",
+		models.PotreeHost, models.PotreePort, models.ProjectsDir,
+		id, projectName, projectName)
 	return link, nil
 }

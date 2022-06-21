@@ -21,7 +21,10 @@ func GetUserById(c *fiber.Ctx) error {
 	db := database.DBConn
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		return err
+		return c.JSON(fiber.Map{
+			"status":  400,
+			"message": "error. wrong request format",
+		})
 	}
 	user := new(models.User)
 	db.Find(&user, id)
@@ -33,7 +36,10 @@ func PostUser(c *fiber.Ctx) error {
 	user := new(models.User)
 	err := c.BodyParser(&user)
 	if err != nil {
-		return c.Status(503).SendString("Error. Wrong type of incoming data.")
+		return c.JSON(fiber.Map{
+			"status":  400,
+			"message": "error. wrong request format",
+		})
 	}
 	db.Create(&user)
 	return c.JSON(user)
@@ -48,7 +54,10 @@ func DeleteUser(c *fiber.Ctx) error {
 	}
 	db.First(&user, id)
 	if user.ID == 0 {
-		return c.Status(500).SendString("User not found.")
+		return c.JSON(fiber.Map{
+			"status":  404,
+			"message": "error. user not found.",
+		})
 	}
 	db.Delete(&user)
 
@@ -87,6 +96,7 @@ func GetCurrentUser(c *fiber.Ctx) error {
 }
 
 func EditCurrentUser(c *fiber.Ctx) error {
+	db := database.DBConn
 	upd := &models.UserUpdateRequest{}
 
 	err := c.BodyParser(&upd)
@@ -96,7 +106,6 @@ func EditCurrentUser(c *fiber.Ctx) error {
 			"message": "error. wrong type of incoming data",
 		})
 	}
-	db := database.DBConn
 	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
 
 	cookie := c.Cookies("jwt")
@@ -126,6 +135,7 @@ func EditCurrentUser(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"status":  200,
-		"message": "Project info updated successfully."})
+		"message": "User info updated successfully.",
+		"user":    user})
 
 }

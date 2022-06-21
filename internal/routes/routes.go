@@ -16,6 +16,8 @@ func InitRoutes(app *fiber.App) {
 	app.Post("api/sign-up", handlers.SignUp)
 	app.Post("api/sign-in", handlers.SignIn)
 	app.Get("api/user", handlers.GetCurrentUser)
+	app.Post("api/user/update", handlers.EditCurrentUser)
+
 	app.Post("api/user/logout", handlers.UserSignout)
 
 	app.Get("api/projects", handlers.GetProjects)

@@ -3,7 +3,6 @@ import sys
 
 import numpy as np
 import laspy as lp
-import matplotlib.pyplot as plt
 
 
 args = sys.argv
@@ -26,19 +25,19 @@ non_empty_voxel_keys, inverse, points_per_voxel = np.unique(
 
 idx_pts_vox_sorted = np.argsort(inverse)
 
-voxel_grid = {}
-grid_candidate_center = []
+grid = {}
+candidate_center_list = []
 last_seen = 0
 
 for index, voxel in enumerate(non_empty_voxel_keys):
-    voxel_grid[tuple(
+    grid[tuple(
         voxel)] = transponded_pts[idx_pts_vox_sorted[last_seen:last_seen+points_per_voxel[index]]]
 
-    grid_candidate_center.append(voxel_grid[tuple(voxel)][np.linalg.norm(
-        voxel_grid[tuple(voxel)] - np.mean(voxel_grid[tuple(voxel)], axis=0), axis=1).argmin()])
+    candidate_center_list.append(grid[tuple(voxel)][np.linalg.norm(
+        grid[tuple(voxel)] - np.mean(grid[tuple(voxel)], axis=0), axis=1).argmin()])
     last_seen += points_per_voxel[index]
 
-sampled = grid_candidate_center
+sampled = candidate_center_list
 
 header = lp.LasHeader(point_format=3, version="1.2")
 header.add_extra_dim(lp.ExtraBytesParams(name="random", type=np.int32))

@@ -3,7 +3,6 @@ import sys
 import numpy as np
 import laspy as lp
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 
 
 args = sys.argv
@@ -28,10 +27,6 @@ screening_size = int(args[4])
 decimated_points = transponded_pts[::screening_size]
 decimated_colors = transponded_colors[::screening_size]
 
-ax = plt.axes(projection='3d')
-
-ax.scatter(decimated_points[:, 0], decimated_points[:, 1],
-           decimated_points[:, 2], c=decimated_colors/65535, s=0.01)
 
 print(plt.show())
 

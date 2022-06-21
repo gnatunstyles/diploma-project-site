@@ -123,7 +123,18 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
       }
     );
     const content = await response.json();
-    //setProjects(content.projects);
+  };
+
+  const downloadProj = async (proj_name: string) => {
+    const response = await fetch(
+      `https://localhost:8000/api/projects/download/${proj_name}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", //cookie getter
+      }
+    );
+    const content = await response.json();
   };
 
   return (

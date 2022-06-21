@@ -1,4 +1,5 @@
 import { Dispatch, SyntheticEvent, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "../styles/projectCard.module.sass";
 import { IProj } from "./ProjectsLayout";
 import Warning from "./Warning";
@@ -58,16 +59,16 @@ export default function ProjectCard(props: {
           >
             Open
           </a>
-          <button
+          <Link
+            to={props.proj.file_path}
+            target="_blank"
+            download
             type="button"
             className="btn btn-outline-primary w-100 mx-0"
             data-bs-dismiss="modal"
-            onClick={() =>
-              props.onClickDelete(props.proj.ID, props.proj.project_name)
-            }
           >
             Download
-          </button>
+          </Link>
 
           <button
             onClick={() => navigator.clipboard.writeText(`${link}`)}
