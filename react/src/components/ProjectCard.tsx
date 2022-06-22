@@ -90,7 +90,7 @@ export default function ProjectCard(props: {
             onClick={(event) => onClickButtonsProcessing(event)}
             value={"random"}
           >
-            Processing (Random Sampling)
+            Processing (Thinning)
           </button>
           <button
             type="button"
@@ -99,7 +99,7 @@ export default function ProjectCard(props: {
             onClick={(event) => onClickButtonsProcessing(event)}
             value={"barycenter"}
           >
-            Processing (Grid Barycenter)
+            Processing (Center gravity)
           </button>
           <button
             type="button"
@@ -108,7 +108,7 @@ export default function ProjectCard(props: {
             onClick={(event) => onClickButtonsProcessing(event)}
             value={"candidate"}
           >
-            Processing (Grid Candidate)
+            Processing (Candidate center)
           </button>
           <button
             type="button"
