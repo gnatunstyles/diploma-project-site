@@ -33,7 +33,8 @@ export default function ModalVindow(props: {mode: string, closeModal: Dispatch<b
             }
         );
         const content = await response.json();
-        //setProjects(content.projects);
+        window.location.reload()
+
     };
 
     const barycenter = async () => {
@@ -52,7 +53,7 @@ export default function ModalVindow(props: {mode: string, closeModal: Dispatch<b
             }
         );
         const content = await response.json();
-        //setProjects(content.projects);
+        window.location.reload()
     };
 
     const candidate = async () => {
@@ -71,7 +72,7 @@ export default function ModalVindow(props: {mode: string, closeModal: Dispatch<b
             }
         );
         const content = await response.json();
-        //setProjects(content.projects);
+        window.location.reload()
     };
 
     const onClickProcess = () => {

@@ -5,6 +5,7 @@ import styles from "../styles/projectsLayout.module.sass";
 import MenuCard from "./MenuCard";
 import LeftNav from "./LeftNav";
 import ModalVindow from "./ModalWindow";
+import ModalEditProject from "./ModalEditProject";
 
 export interface IProj {
   ID: number;
@@ -43,6 +44,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [mode, setMode] = useState("none");
+  const [openModalEdit, setOpenModalEdit] = useState(false)
 
   const [selectedProj, setSelectedProj] = useState<IProj>(getInitialState);
 
@@ -95,6 +97,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
             setSelectedProj={setSelectedProj}
             onClickDelete={onDeleteItem}
             onClickDownload={onDownloadItem}
+            openEdit={setOpenModalEdit}
             setMode={setMode}
             openModal={setShowModal}
           />
@@ -169,6 +172,9 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
                 proj={selectedProj}
               />
             )}
+            {openModalEdit &&
+              <ModalEditProject closeModal={setOpenModalEdit} proj={selectedProj}/>
+            }
             <div className={styles.projectsLayout}>
               <div className={styles.projectsLayoutTitleLayout}>
                 <div className={styles.projectsLayoutTitleLayoutText}>
