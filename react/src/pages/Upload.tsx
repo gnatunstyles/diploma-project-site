@@ -22,7 +22,6 @@ export default function Upload(props: { userid: number }) {
         `https://localhost:8000/api/projects/upload/${props.userid}/${file?.name}`,
         {
           method: "POST",
-          headers: { "Content-Type": "multipart/form-data" },
           credentials: "include",
           body: formData,
         }

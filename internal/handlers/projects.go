@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -345,27 +346,32 @@ func GetProjectByName(c *fiber.Ctx) error {
 }
 
 func DownloadProject(c *fiber.Ctx) error {
-	req := &models.DownloadProjectRequest{}
-	err := c.BodyParser(&req)
+	db := database.DBConn
+	p := &models.Project{}
+
+	name := c.Params("project_name")
+	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
+	cookie := c.Cookies("jwt")
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(jwtSecretKey), nil
+		})
+
 	if err != nil {
 		return c.JSON(fiber.Map{
-			"status":  400,
-			"message": "Error. Wrong type of incoming request.",
-			"error":   err,
+			"status":  fiber.StatusUnauthorized,
+			"message": "unauthorized",
 		})
 	}
+	claims := token.Claims.(*jwt.StandardClaims)
+	id, _ := strconv.Atoi(claims.Id)
 
-	err = c.Download(req.FilePath)
-	if err != nil {
+	db.Where("name = ? AND user_id = ?", name, id).First(&p)
+	if p.ID == 0 {
 		return c.JSON(fiber.Map{
-			"status":  500,
-			"message": "Error during file downloading.",
-			"error":   err,
+			"status":  fiber.ErrNotFound,
+			"message": "Project Not Found",
 		})
 	}
-
-	return c.JSON(fiber.Map{
-		"status":  200,
-		"message": "File downloaded successfully.",
-	})
+	return c.Download(p.FilePath)
 }

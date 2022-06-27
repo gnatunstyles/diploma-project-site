@@ -10,13 +10,14 @@ const Register = () => {
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    const creds = btoa(`${email}:${password}:${username}`);
     await fetch("https://localhost:8000/api/sign-up", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
+      headers: {
+        "Authorization": `Basic ${creds}`,
+      },
     });
     setNav(true);
-
   };
   
   if (nav) {
@@ -25,7 +26,7 @@ const Register = () => {
 
   return (
     <form  className={styles.wrapper} onSubmit={submit}>
-      <h1 className="h3 mb-3 fw-normal">Please sign up</h1>
+      <h1 className="h1 mb-4 mt-4 fw-normal">Please sign up</h1>
 
       <div className="form-floating">
         <input
@@ -56,7 +57,7 @@ const Register = () => {
         />
         <label htmlFor="floatingPassword">Password</label>
       </div>
-      <button className="w-100 btn btn-lg btn-primary" type="submit">
+      <button className="w-100 btn btn-lg mt-3 btn-primary" type="submit">
         Sign up
       </button>
     </form>

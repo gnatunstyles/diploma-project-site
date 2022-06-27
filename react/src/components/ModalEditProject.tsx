@@ -48,9 +48,13 @@ export default function ModalEditProject(props: { closeModal: Dispatch<boolean>,
                         <div className={styles.modalWindowContainerContentLayoutInputLayoutText}>Название</div>
                         <input type={"text"} value={inputedValueName} onChange={(event) => handleChangeValueName(event)}/>
                     </div>
-                    <div className={styles.modalWindowContainerContentLayoutEditUserLayout}>
+                    {/* <div className={styles.modalWindowContainerContentLayoutEditUserLayout}>
                         <div className={styles.modalWindowContainerContentLayoutInputLayoutText}>Инфо</div>
                         <input type={"text"} value={inputedValueInfo} onChange={(event) => handleChangeValueEmail(event)}/>
+                    </div> */}
+                    <div className={styles.modalWindowContainerContentLayoutEditUserLayout}>
+                        <div className={styles.modalWindowContainerContentLayoutInputLayoutText}>Инфо</div>
+                        <textarea value={inputedValueInfo} onChange={(event) => handleChangeValueEmail(event)}/>
                     </div>
                 </div>
                 <div className={styles.modalWindowContainerButtonsLayout}>

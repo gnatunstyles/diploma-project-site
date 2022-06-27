@@ -86,11 +86,6 @@ export default function MenuCard(props: { user: any; mode: any }) {
                     {(props.user.available / 1073741824).toFixed(4)} GB
                   </div>
                 </div>
-                <div className="itemsButtonsGroup">
-                  <button className="buttonSettings" />
-                  <button className="buttonSettings" />
-                  <button className="buttonSettings" />
-                </div>
               </div>
             )}
             {modalEditOpen && (

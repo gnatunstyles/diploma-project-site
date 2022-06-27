@@ -1,14 +1,14 @@
 package models
 
 type SignUpRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email    string
+	Username string
+	Password string
 }
 
 type SignInRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string
+	Password string
 }
 
 type ProjectUpdateRequest struct {
@@ -42,14 +42,4 @@ type GetPointsAmountRequest struct {
 	ProjectName string `json:"project_name"`
 	UserId      uint64 `json:"user_id"`
 	FilePath    string `json:"file_path"`
-}
-
-type DownloadProjectRequest struct {
-	ProjectName string `json:"project_name"`
-	UserId      uint64 `json:"user_id"`
-	FilePath    string `json:"file_path"`
-}
-
-type PasswordResetRequest struct {
-	Email string `json:"email"`
 }

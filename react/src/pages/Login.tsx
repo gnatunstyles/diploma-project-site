@@ -1,6 +1,6 @@
 import React, { SyntheticEvent, useState } from "react";
 import { Navigate } from "react-router-dom";
-import styles from '../styles/leftMenu.module.sass'
+import styles from "../styles/leftMenu.module.sass";
 
 const Login = (props: { setName: (username: string) => void }) => {
   const [email, setEmail] = useState("");
@@ -9,25 +9,28 @@ const Login = (props: { setName: (username: string) => void }) => {
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    const creds = btoa(`${email}:${password}`);
     const response = await fetch("https://localhost:8000/api/sign-in", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", //cookie getter
-      body: JSON.stringify({ email, password }),
+      headers: {
+        "Authorization": `Basic ${creds}`,
+      },
+      credentials: "include",
     });
 
     const content = await response.json();
     props.setName(content.username);
 
     setNav(true);
+
   };
   if (nav) {
     return <Navigate to={"/"} />;
   }
 
   return (
-    <form  className={styles.wrapper} onSubmit={submit}>
-      <h1 className="h3 mb-3 fw-normal" >Please sign in</h1>
+    <form className={styles.wrapper} onSubmit={submit}>
+      <h1 className="h1 mb-4 mt-4 fw-normal">Please sign in</h1>
 
       <div className="form-floating">
         <input
@@ -49,7 +52,7 @@ const Login = (props: { setName: (username: string) => void }) => {
         <label htmlFor="floatingPassword">Password</label>
       </div>
 
-      <button className="w-100 btn btn-lg btn-primary" type="submit">
+      <button className="w-100 btn btn-lg mt-3 btn-primary" type="submit">
         Sign in
       </button>
     </form>

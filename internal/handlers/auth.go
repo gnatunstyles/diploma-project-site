@@ -2,6 +2,10 @@ package handlers
 
 import (
 	database "diploma-project-site/db"
+	b64 "encoding/base64"
+
+	"strings"
+
 	"diploma-project-site/internal/models"
 	"os"
 	"strconv"
@@ -14,12 +18,21 @@ import (
 
 func SignIn(c *fiber.Ctx) error {
 	db := database.DBConn
-	req := new(models.SignInRequest)
+	header := c.Request().Header.Peek("authorization")
 	user := new(models.User)
-	err := c.BodyParser(&req)
+	str := strings.Split(string(header), " ")[1]
+	uDec, err := b64.StdEncoding.DecodeString(str)
+
 	if err != nil {
-		return c.Status(503).SendString("Error. Wrong type of incoming data.")
+		return c.Status(400).SendString("Encoding error.")
 	}
+
+	creds := strings.Split(string(uDec), ":")
+	req := &models.SignInRequest{
+		Email:    creds[0],
+		Password: creds[1],
+	}
+
 	db.Where("email = ?", req.Email).First(&user)
 	if user.Email != "" {
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
@@ -57,11 +70,20 @@ func SignIn(c *fiber.Ctx) error {
 
 func SignUp(c *fiber.Ctx) error {
 	db := database.DBConn
-	req := new(models.SignUpRequest)
 	exist := new(models.User)
-	err := c.BodyParser(&req)
+	header := c.Request().Header.Peek("authorization")
+	str := strings.Split(string(header), " ")[1]
+	uDec, err := b64.StdEncoding.DecodeString(str)
+
 	if err != nil {
-		return c.Status(503).SendString("Error. Wrong type of incoming data.")
+		return c.Status(400).SendString("Encoding error.")
+	}
+
+	creds := strings.Split(string(uDec), ":")
+	req := &models.SignUpRequest{
+		Email:    creds[0],
+		Password: creds[1],
+		Username: creds[2],
 	}
 
 	if req.Email == "" || req.Password == "" || req.Username == "" {

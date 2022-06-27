@@ -25,6 +25,7 @@ func InitRoutes(app *fiber.App) {
 	app.Post("api/projects/upload/:id/:project_name", handlers.UploadProject)
 	app.Post("api/projects/update/:project_name", handlers.UpdateProject)
 	app.Get("api/projects/share/:project_name", handlers.ShareProjectLink)
+	app.Get("api/projects/download/:project_name", handlers.DownloadProject)
 
 	app.Get("api/projects/find/:id/:project_name", handlers.GetProjectByName)
 

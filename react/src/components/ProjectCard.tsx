@@ -14,7 +14,7 @@ export default function ProjectCard(props: {
 
   setSelectedProj: Dispatch<IProj>;
   onClickDelete: (itemId: any, proj_name: string) => void;
-  onClickDownload: (itemId: any, proj_name: string) => void;
+  // onClickDownload: (itemId: any, proj_name: string) => void;
 }) {
   //     ID: 10,
   //     CreatedAt: "2022-05-26T21:34:18.144414+03:00",
@@ -95,19 +95,16 @@ export default function ProjectCard(props: {
           >
             Open
           </a>
-          <Link
-            to={props.proj.file_path}
+          <a
+            href={`https://localhost:8000/api/projects/download/${props.proj.project_name}`}
             target="_blank"
             download
             type="button"
             className="btn btn-outline-primary w-100 mx-0"
             data-bs-dismiss="modal"
-            onClick={() =>
-              props.onClickDownload(props.proj.ID, props.proj.project_name)
-            }
           >
             Download
-          </Link>
+          </a>
 
           <button
             onClick={() => navigator.clipboard.writeText(`${link}`)}
@@ -147,7 +144,7 @@ export default function ProjectCard(props: {
           </button>
           <button
             type="button"
-            className="btn btn-outline-dark w-100 mx-0"
+            className="btn btn-outline-danger w-100 mx-0"
             data-bs-dismiss="modal"
             onClick={() =>
               props.onClickDelete(props.proj.ID, props.proj.project_name)

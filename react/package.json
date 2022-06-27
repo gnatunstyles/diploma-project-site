@@ -11,6 +11,7 @@
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.3",
     "@types/react-router-dom": "^5.3.3",
+    "buffer": "^6.0.3",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
@@ -20,7 +21,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "export HTTPS=true&&TLS_CRT_FILE=../tls/cert.pem&&TLS_KEY_FILE=../tls/key.pem react-scripts start",    
+    "start": "export HTTPS=true&&TLS_CRT_FILE=../tls/cert.pem&&TLS_KEY_FILE=../tls/key.pem react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

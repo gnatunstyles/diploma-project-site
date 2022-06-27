@@ -96,7 +96,7 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
             proj={projects[i]}
             setSelectedProj={setSelectedProj}
             onClickDelete={onDeleteItem}
-            onClickDownload={onDownloadItem}
+            // onClickDownload={onDownloadItem}
             openEdit={setOpenModalEdit}
             setMode={setMode}
             openModal={setShowModal}
@@ -117,10 +117,10 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
     deleteProj(proj_name);
   };
   
-  const onDownloadItem = (itemId: any, proj_name: string) => {
-    console.log(itemId);
-    downloadProj(proj_name);
-  };
+  // const onDownloadItem = (itemId: any, proj_name: string) => {
+  //   console.log(itemId);
+  //   downloadProj(proj_name);
+  // };
 
   const deleteProj = async (proj_name: string) => {
     const response = await fetch(
@@ -139,11 +139,9 @@ export default function ProjectsLayout(props: { user: any; id: number }) {
       `https://localhost:8000/api/projects/download/${proj_name}`,
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", //cookie getter
+        credentials: "include", 
       }
     );
-    const content = await response.json();
   };
 
   return (
