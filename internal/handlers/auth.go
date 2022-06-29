@@ -22,7 +22,6 @@ func SignIn(c *fiber.Ctx) error {
 	user := new(models.User)
 	str := strings.Split(string(header), " ")[1]
 	uDec, err := b64.StdEncoding.DecodeString(str)
-
 	if err != nil {
 		return c.Status(400).SendString("Encoding error.")
 	}

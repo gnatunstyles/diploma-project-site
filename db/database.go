@@ -26,6 +26,7 @@ func InitDB(dsn string) {
 	fmt.Println("database connected successfully")
 	DBConn.AutoMigrate(&models.User{}, &models.Project{})
 	fmt.Println("database migrated")
+
 }
 
 func PlaceProcProjectToDB(id int, points uint64, fileName, newFilePath, link, prevProj, procType string) error {

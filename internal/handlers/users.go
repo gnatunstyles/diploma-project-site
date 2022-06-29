@@ -125,10 +125,30 @@ func EditCurrentUser(c *fiber.Ctx) error {
 	db.Where("id = ?", claims.Id).First(&user)
 
 	if upd.NewEmail != "" {
-		user.Email = upd.NewEmail
+		dup := models.User{}
+		db.Where("email = ?", upd.NewEmail).First(&dup)
+		if dup.ID == 0 {
+			user.Email = upd.NewEmail
+		} else {
+			return c.JSON(fiber.Map{
+				"status":  fiber.StatusMethodNotAllowed,
+				"message": "error. user with this email already exists.",
+			})
+		}
 	}
 	if upd.NewUsername != "" {
-		user.Username = upd.NewUsername
+		{
+			dup := models.User{}
+			db.Where("username = ?", upd.NewUsername).First(&dup)
+			if dup.ID == 0 {
+				user.Username = upd.NewUsername
+			} else {
+				return c.JSON(fiber.Map{
+					"status":  fiber.StatusMethodNotAllowed,
+					"message": "error. user with this name already exists.",
+				})
+			}
+		}
 	}
 
 	db.Save(&user)

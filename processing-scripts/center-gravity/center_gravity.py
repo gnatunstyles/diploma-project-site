@@ -32,9 +32,8 @@ gravity_center_list = []
 last = 0
 
 for index, voxel in enumerate(non_empty_voxel_keys):
-    grid[tuple(
-        voxel)] = transponded_pts[
-            indexes_points_vox_sorted[last:last+points_num_per_voxel[index]]]
+    grid[tuple(voxel)] = transponded_pts[indexes_points_vox_sorted[last:last +
+                                                                   points_num_per_voxel[index]]]
 
     gravity_center_list.append(np.mean(grid[tuple(voxel)], axis=0))
 

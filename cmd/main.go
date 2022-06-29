@@ -25,7 +25,7 @@ func main() {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowCredentials: true, //with this frontend allow to take cookie and send it back
+		AllowCredentials: true,
 	}))
 
 	routes.InitRoutes(app)
